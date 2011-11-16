@@ -27,7 +27,7 @@ namespace wapstart {
     /**
      *
      */
-    bool get(const args_type& args, result_type& result);
+    bool get(result_type& result);
     bool set_start_time();
     bool set_storage_size(uint size);
     bool set_deleted(uint count); // deleted_ += count

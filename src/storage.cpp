@@ -5,6 +5,7 @@
 //-------------------------------------------------------------------------------------------------
 #include <stdio.h>
 #include "storage.hpp"
+#include "boost/lexical_cast.hpp"
 //-------------------------------------------------------------------------------------------------
 namespace wapstart {
   Storage::Storage(/* TODO Configuration */)
@@ -14,17 +15,16 @@ namespace wapstart {
   //-----------------------------------------------------------------------------------------------
   void Storage::_do(const cmd_type  &command) 
   {
-    if (command.arg_begin() != command.arg_end())
+    /*if (command.arg_begin() != command.arg_end())
       printf("%s : [", command.name().c_str());
-    for(Command::arg_iterator x = command.arg_begin(); x != command.arg_end(); ++x) {
+    for(Command::arg_iterator x = command.arg_begin(); x != command.arg_end(); ++x) 
       if((x + 1) != command.arg_end()) 
         printf("%s, ", x->c_str());
-      else {
-        printf("%s ]\n", x->c_str());
-      }
-    }
+      else
+        printf("%s]\n", x->c_str());
+    */
     if (command.name() == "stats")
-      get_stats(command.args_, command.res_);
+      get_stats(command.res_);
     else if (command.name() == "get")
       get_val(command.args_, command.res_);
     else if (command.name() == "quit")
@@ -75,27 +75,40 @@ namespace wapstart {
   }
 //-------------------------------------------------------------------------------------------------
 
-  void Storage::get_stats(const Stats::args_type& args, result_type& res)
+  void Storage::get_stats(result_type& res)
   {
-    stats_.get(args, res);  
+    stats_.get(res);  
   }
 //-------------------------------------------------------------------------------------------------
 
   bool Storage::get_val(const Command::args_type& args, result_type& res)
   {
-    printf("[Storage::get_val] process command (empty)\n");
     res = "";
-    /*for(Command::arg_iterator x = args.begin(); x != argsend(); ++x) {
+    for(Command::arg_iterator x = args.begin(); x != args.end(); ++x) {
       std::string value;
       if ( storage_.get(*x, value) )
-        get_res_add(*x, value, res);
+        res_append(*x, value, res);
       else
        queue_.push(*x); 
-    }*/
+    }
+    refresh_stats();
     res += "END\r\n";
+    //printf("res: %s", res.c_str());
     return true;
   }
-  //-----------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------
+  
+  void Storage::res_append(const arg_type& arg, const val_type& value, result_type& result)
+  {
+    result.append("VALUE ");
+    result.append(arg);
+    result.append(" 0 "); // хардкод нулевого флага - пожелание заказчика
+    result.append(boost::lexical_cast<result_type>(value.length()));
+    result.append("\r\n");
+    result.append(value);
+    result.append("\r\n"); 
+  }
+//-----------------------------------------------------------------------------------------------
 } // namespace wapstart
 //-------------------------------------------------------------------------------------------------
 

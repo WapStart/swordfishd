@@ -8,26 +8,23 @@ namespace wapstart {
   }
 //-------------------------------------------------------------------------------------------------
 
-  bool Stats::get(const args_type& args, result_type& result)
+  bool Stats::get(result_type& result)
   {
     result = "";
     std::stringstream ss;
     read_scoped_lock lock(mutex_);
-    if (args.size() == 0)
-    {
-      ss << "STAT " << "start_time "   << start_time_   << "\r\n";
-      ss << "STAT " << "storage_size " << storage_size_ << "\r\n";
-      ss << "STAT " << "deleted "       << deleted_      << "\r\n";
-      ss << "STAT " << "gets_count "   << gets_         << "\r\n";
-      ss << "STAT " << "queue_size "   << queue_size_   << "\r\n";
-    }
-    else
-    {
-       //обработать STAT с параметрами
-    }
+      
+    ss << "STAT " << "uptime "   << boost::date_time::second_clock<time_type>::local_time() - start_time_   << "\r\n";
+    ss << "STAT " << "storage_size " << storage_size_ << "\r\n";
+    ss << "STAT " << "deleted "       << deleted_      << "\r\n";
+    ss << "STAT " << "gets_count "   << gets_         << "\r\n";
+    ss << "STAT " << "queue_size "   << queue_size_   << "\r\n";
     ss << "END\r\n";
+    
     result = ss.str();
-    //printf("[Stats::get] result: %s\n", result.c_str());
+    
+    printf("[Stats::get] result: %s\n", result.c_str());
+    
     return true;
   }
 

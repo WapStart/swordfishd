@@ -9,7 +9,7 @@ namespace wapstart {
 //-------------------------------------------------------------------------------------------------
 
   Hashmap::Hashmap(const ttl_type& ttl)
-    : ttl_(ttl) 
+    : ttl_(ttl), deleted_(0), gets_(0) 
   {
     
   }

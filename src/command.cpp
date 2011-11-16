@@ -22,7 +22,9 @@ namespace wapstart {
     std::string ttt;
     if(std::getline(stream, name_, privacy::_spacebar)) parse_args(stream);
     else name_ = _unknown_command;
-    printf("command name %s\n", name_.c_str());
+    if (name_[name_.length() - 2] == '\r')
+      name_.erase(name_.length() - 2, 2);
+    //printf("command name %s\n", name_.c_str());
   }
   //-----------------------------------------------------------------------------------------------
   void Command::parse_args(std::istream &stream)
@@ -31,7 +33,7 @@ namespace wapstart {
     while(std::getline(stream, arg, privacy::_spacebar))
       args_.push_back(arg);
     if (args_.size())
-      args_.at(args_.size()-1).erase(args_.at(args_.size()-1).length() - 2, 2); 
+      args_.back().erase(args_.back().length() - 2, 2); 
   }
   //-----------------------------------------------------------------------------------------------
 } // namespace wapstart

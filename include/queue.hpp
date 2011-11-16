@@ -18,7 +18,7 @@ namespace wapstart {
     typedef Queue class_type;
     typedef boost::/*interprocess::interprocess_upgradable_*/mutex mutex_type;
     typedef std::string data_type;
-    typedef std::queue<data_type> queue_type;   
+    typedef std::list<data_type> queue_type;   
     typedef boost::condition_variable cv_type;
     /**
      *

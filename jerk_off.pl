@@ -2,9 +2,9 @@
 
 use IO::Socket;
 
-use constant REPETITIONS_NUMBER => 3000;
+use constant REPETITIONS_NUMBER => 1;
  
-my $get_cmd  = "stats\r\n";
+my $get_cmd  = "get 111\r\n";
 
 for(my $x = 0; $x < REPETITIONS_NUMBER; ++$x) {
  

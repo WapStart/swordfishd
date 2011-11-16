@@ -42,13 +42,14 @@ namespace wapstart {
     void pop_key(key_type& key);
     void push_key(const key_type& key);
     void expirate();
+    void res_append(const arg_type& arg, const val_type& value, result_type& res);
   private:
     
     Storage(const class_type &);
     void operator =(const class_type &);
     void refresh_stats();
 
-    void get_stats(const Stats::args_type& args, result_type& res);
+    void get_stats(result_type& res);
     bool get_val(const Command::args_type& args, result_type& res);
 
 

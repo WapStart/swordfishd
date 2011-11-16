@@ -5,6 +5,8 @@
 //-------------------------------------------------------------------------------------------------
 #include "queue.hpp"
 //-------------------------------------------------------------------------------------------------
+#include <algorithm>
+//-------------------------------------------------------------------------------------------------
 namespace wapstart {
   Queue::Queue()
   {
@@ -14,7 +16,8 @@ namespace wapstart {
   uint Queue::push(const data_type& data)
   {
     boost::mutex::scoped_lock lock(mutex_);
-    queue_.push(data);
+    if (std::find(queue_.begin(), queue_.end(), data) == queue_.end())
+      queue_.push_back(data);
     uint size = queue_.size();
     lock.unlock();
     cv_.notify_one(); 
@@ -35,7 +38,7 @@ namespace wapstart {
       cv_.wait(lock);
     }
     data = queue_.front();
-    queue_.pop();
+    queue_.pop_front();
   }
 
   uint Queue::size()

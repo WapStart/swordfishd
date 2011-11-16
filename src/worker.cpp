@@ -23,19 +23,23 @@ namespace wapstart {
   void Worker::_do()
   {
     try{
-   
-    boost::asio::streambuf request;
-    boost::asio::read_until(socket_, request, "\r\n");
+    while(1)
+    {  
+      boost::asio::streambuf request;
+      boost::asio::read_until(socket_, request, "\r\n");
     
-    std::istream command_stream(&request);
-    
-    //storage_._do(Command(command_stream));
+      std::istream command_stream(&request);
+      
+      Command cmd(command_stream);
+
+      storage_._do(cmd);
    
-    std::string message = "END\r\n";
+      std::string message = cmd.result();
+      if (message.empty()) 
+        message = "END\r\n";
 
-    boost::asio::write(socket_, boost::asio::buffer(message), boost::asio::transfer_all()); 
-
-    _do();
+      boost::asio::write(socket_, boost::asio::buffer(message), boost::asio::transfer_all()); 
+    }
     }
     catch(...)
     {
