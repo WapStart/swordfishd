@@ -1,7 +1,7 @@
 import os
 
 env = Environment()
-env['CCFLAGS'] = '-O3'
+env['CCFLAGS'] = '-g'
 AddOption('--extrapath',
           dest='extrapath',
           type='string',
@@ -30,6 +30,11 @@ for lib in boost_libs:
   if not cfg.CheckLib("boost_%s" % lib):
     print "scons: %s boost library not found" % lib
     Exit(-1)
+
+if not cfg.CheckLib('dl'):
+  print "scons: dl library not found"
+  Exit(-1)
+
 
 SConscript('SConscript', exports='env')
 SConscript('tests/SConscript', exports='env')

@@ -26,6 +26,7 @@ namespace wapstart {
     storage_.add_item("5", "bingo5!");
     storage_.add_item("6", "bingo6!");
     storage_.add_item("7", "bingo7!");
+    
   }
   //-----------------------------------------------------------------------------------------------
   void Server::on_accept(const error_code_type &error) 
