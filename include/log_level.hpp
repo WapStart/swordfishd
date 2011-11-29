@@ -6,6 +6,8 @@
 #ifndef __WAPSTART_SWORDFISH_LOG_LEVEL__H__
 #define __WAPSTART_SWORDFISH_LOG_LEVEL__H__
 //-------------------------------------------------------------------------------------------------
+#include <ostream>
+//-------------------------------------------------------------------------------------------------
 #define __CAST_NAME_TO_LEVEL(X, SHORT_NAME, LONG_NAME) \
   if(X == #SHORT_NAME || X == #LONG_NAME) return SHORT_NAME; 
 //-------------------------------------------------------------------------------------------------
@@ -35,6 +37,34 @@ namespace wapstart {
       return DEBUG;
     }
   };
+  //-----------------------------------------------------------------------------------------------
+  template< typename CharT, typename TraitsT >
+  inline std::basic_ostream< CharT, TraitsT >& operator << (
+    std::basic_ostream< CharT, TraitsT >& strm, LogLevel::type lvl)
+  {
+    switch (lvl)
+    {
+    case LogLevel::EMERG:
+      strm << "EMERG "; break;
+    case LogLevel::ALERT:
+      strm << "ALERT "; break;
+    case LogLevel::CRIT:
+      strm << "CRIT  "; break;
+    case LogLevel::ERROR:
+      strm << "ERROR "; break;
+    case LogLevel::WARN:
+      strm << "WARN  "; break;
+    case LogLevel::NOTICE:
+      strm << "NOTICE"; break;
+    case LogLevel::INFO:
+      strm << "INFO  "; break;
+    case LogLevel::DEBUG:
+      strm << "DEBUG "; break;
+    default:
+      strm << static_cast< int >(lvl); break;
+    }
+    return strm;
+  }
   //-----------------------------------------------------------------------------------------------
 } // namespace wapstart
 //-------------------------------------------------------------------------------------------------
