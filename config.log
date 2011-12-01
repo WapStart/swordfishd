@@ -72,7 +72,7 @@ scons: Configure: The original builder output was:
   |
 scons: Configure: (cached) yes
 
-scons: Configure: Checking for C library dl... 
+scons: Configure: Checking for C library boost_log_setup... 
 scons: Configure: ".sconf_temp/conftest_3.c" is up to date.
 scons: Configure: The original builder output was:
   |.sconf_temp/conftest_3.c <-
@@ -92,7 +92,31 @@ scons: Configure: The original builder output was:
   |
 scons: Configure: ".sconf_temp/conftest_3" is up to date.
 scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_3 .sconf_temp/conftest_3.o -L/usr/local/lib -L/usr/local/lib64 -lboost_program_options -lboost_system -lboost_thread -ldl
+  |gcc -o .sconf_temp/conftest_3 .sconf_temp/conftest_3.o -L/usr/local/lib -L/usr/local/lib64 -lboost_program_options -lboost_system -lboost_thread -lboost_log_setup
+  |
+scons: Configure: (cached) yes
+
+scons: Configure: Checking for C library dl... 
+scons: Configure: ".sconf_temp/conftest_4.c" is up to date.
+scons: Configure: The original builder output was:
+  |.sconf_temp/conftest_4.c <-
+  |  |
+  |  |
+  |  |
+  |  |int
+  |  |main() {
+  |  |  
+  |  |return 0;
+  |  |}
+  |  |
+  |
+scons: Configure: ".sconf_temp/conftest_4.o" is up to date.
+scons: Configure: The original builder output was:
+  |gcc -o .sconf_temp/conftest_4.o -c -g -I/usr/local/include -Iinclude .sconf_temp/conftest_4.c
+  |
+scons: Configure: ".sconf_temp/conftest_4" is up to date.
+scons: Configure: The original builder output was:
+  |gcc -o .sconf_temp/conftest_4 .sconf_temp/conftest_4.o -L/usr/local/lib -L/usr/local/lib64 -lboost_program_options -lboost_system -lboost_thread -lboost_log_setup -ldl
   |
 scons: Configure: (cached) yes
 

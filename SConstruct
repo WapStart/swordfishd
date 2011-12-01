@@ -23,7 +23,7 @@ add_extra_libs('/usr/local')
 
 env.Append(CPPPATH=['include'])
 
-boost_libs = ['program_options', 'system', 'thread']
+boost_libs = ['program_options', 'system', 'thread', 'log_setup']
 
 cfg = env.Configure()
 for lib in boost_libs:
