@@ -23,50 +23,41 @@ namespace wapstart {
     typedef std::vector<std::string>  args_type;
     typedef args_type::const_iterator arg_iterator;
     typedef std::string               result_type;
-    friend class Storage;
     /**
      * Construct command objectt from input stream
      */
-    Command(std::istream &stream);
+    Command(const std::string &cmd_line);
     /**
      * @return Name of the current command
      */ 
-    const std::string &name() const { return name_; }
+    const std::string &name() const;
     /**
      * @return Number of command arguments 
      */
-    size_type argc() const { return args_.size(); }
+    size_type argc() const;
     /**
      *
      */
-    const std::string &operator [](size_type x) const { return args_[x]; }
+    const std::string &operator [](size_type x) const;
     /**
      *
      */
-    const std::string &at(size_type x) const { return args_.at(x); }
+    const std::string &at(size_type x) const;
     /**
      *
      */
-    arg_iterator arg_begin() const { return args_.begin(); }
+    arg_iterator arg_begin() const;
     /**
      *
      */
-    arg_iterator arg_end() const { return args_.end(); }
+    arg_iterator arg_end() const;
 
-    const result_type& result() { return res_; }
-  
   private:
-    std::string name_; /**< Name of command */
     args_type   args_; /**< List of arguments */
-    mutable result_type res_;
     /**
      *
      */
-    void parse_command(std::istream &stream);
-    /**
-     *
-     */
-    void parse_args(std::istream &stream);
+    void parse_command(const std::string &cmd_line);
   };
   //-----------------------------------------------------------------------------------------------
 } // namespace wapstart

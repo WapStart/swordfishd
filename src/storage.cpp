@@ -13,7 +13,7 @@ namespace wapstart {
   {
   }
   //-----------------------------------------------------------------------------------------------
-  void Storage::_do(const cmd_type  &command) 
+  void Storage::_do(const cmd_type  &command, result_type& result) 
   {
     /*if (command.arg_begin() != command.arg_end())
       printf("%s : [", command.name().c_str());
@@ -24,9 +24,9 @@ namespace wapstart {
         printf("%s]\n", x->c_str());
     */
     if (command.name() == "stats")
-      get_stats(command.res_);
+      get_stats(result);
     else if (command.name() == "get")
-      get_val(command.args_, command.res_);
+      get_val(command, result);
     else if (command.name() == "quit")
       return;
   }
@@ -45,6 +45,12 @@ namespace wapstart {
     stats_.set_deleted(0);
     stats_.set_queue_size(queue_.size());
     stats_.set_gets(0);   
+  }
+//-------------------------------------------------------------------------------------------------
+
+  size_t Storage::queue_size()
+  {
+    return queue_.size(); 
   }
 //-------------------------------------------------------------------------------------------------
 
@@ -81,10 +87,10 @@ namespace wapstart {
   }
 //-------------------------------------------------------------------------------------------------
 
-  bool Storage::get_val(const Command::args_type& args, result_type& res)
+  bool Storage::get_val(const Command& cmd, result_type& res)
   {
     res = "";
-    for(Command::arg_iterator x = args.begin(); x != args.end(); ++x) {
+    for(Command::arg_iterator x = cmd.arg_begin(); x != cmd.arg_end(); ++x) {
       std::string value;
       if ( storage_.get(*x, value) )
         res_append(*x, value, res);
@@ -93,7 +99,7 @@ namespace wapstart {
     }
     refresh_stats();
     res += "END\r\n";
-    //printf("res: %s", res.c_str());
+    printf("res: %s", res.c_str());
     return true;
   }
 //-----------------------------------------------------------------------------------------------

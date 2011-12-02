@@ -67,7 +67,7 @@ namespace wapstart {
         if (!key.empty())
           keys.push_back(key);
         
-      }while(!key.empty() && --k > 0);
+      }while(storage_->queue_size() != 0  && --k > 0);
 
       if (keys.size() > 0)
       {
@@ -80,7 +80,7 @@ namespace wapstart {
           storage_->add_item(*key_it++, *val_it++);
         }
       }
-      else sleep(10);
+      else sleep(1);
     }
   }
 

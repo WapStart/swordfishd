@@ -36,13 +36,15 @@ namespace wapstart {
     /**
      *
      */
-    void _do(const cmd_type& command);
+    void _do(const cmd_type& command, result_type& result);
     void add_item(const key_type& key, const val_type& val);
     void reset_stats();
     void pop_key(key_type& key);
     void push_key(const key_type& key);
     void expirate();
     void res_append(const arg_type& arg, const val_type& value, result_type& res);
+    
+    size_t queue_size(); 
   private:
     
     Storage(const class_type &);
@@ -50,7 +52,7 @@ namespace wapstart {
     void refresh_stats();
 
     void get_stats(result_type& res);
-    bool get_val(const Command::args_type& args, result_type& res);
+    bool get_val(const Command& cmd, result_type& res);
 
 
     storage_type storage_;

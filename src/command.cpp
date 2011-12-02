@@ -4,36 +4,53 @@
  */
 //-------------------------------------------------------------------------------------------------
 #include "command.hpp"
-#include <stdio.h>
 //-------------------------------------------------------------------------------------------------
 namespace wapstart {
   namespace privacy {
     const char _spacebar = ' ';
     //---------------------------------------------------------------------------------------------
+    const std::string _unknown_command = "unknown";
+    //---------------------------------------------------------------------------------------------
   } // namespace privacy
   //-----------------------------------------------------------------------------------------------
-  Command::Command(std::istream &stream)
+  Command::Command(const std::string &cmd_line)
   {
-    parse_command(stream);
+    parse_command(cmd_line);
   }
   //-----------------------------------------------------------------------------------------------
-  void Command::parse_command(std::istream &stream)
+  void Command::parse_command(const std::string &cmd_line)
   {
-    std::string ttt;
-    if(std::getline(stream, name_, privacy::_spacebar)) parse_args(stream);
-    else name_ = _unknown_command;
-    if (name_[name_.length() - 2] == '\r')
-      name_.erase(name_.length() - 2, 2);
-    //printf("command name %s\n", name_.c_str());
+    boost::split(args_, cmd_line, boost::is_any_of(" "), boost::token_compress_on);
   }
   //-----------------------------------------------------------------------------------------------
-  void Command::parse_args(std::istream &stream)
+  const std::string &Command::name() const
   {
-    std::string arg;
-    while(std::getline(stream, arg, privacy::_spacebar))
-      args_.push_back(arg);
-    if (args_.size())
-      args_.back().erase(args_.back().length() - 2, 2); 
+    return args_.size() > 0 ? args_[0] : privacy::_unknown_command; 
+  }
+  //-----------------------------------------------------------------------------------------------
+  Command::size_type Command::argc() const
+  {
+    return args_.size() > 0 ? args_.size() - 1 : 0;
+  }
+  //-----------------------------------------------------------------------------------------------
+  const std::string &Command::operator [](size_type x) const
+  {
+    return args_[x + 1];
+  }
+  //-----------------------------------------------------------------------------------------------
+  const std::string &Command::at(size_type x) const
+  {
+    return args_.at(x + 1);
+  }
+  //-----------------------------------------------------------------------------------------------
+  Command::arg_iterator Command::arg_begin() const
+  {
+    return argc() ? args_.begin() + 1 : args_.end();
+  }
+  //-----------------------------------------------------------------------------------------------
+  Command::arg_iterator Command::arg_end() const
+  {
+    return args_.end();
   }
   //-----------------------------------------------------------------------------------------------
 } // namespace wapstart
