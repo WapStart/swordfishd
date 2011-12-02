@@ -3,8 +3,10 @@
  * @author Litvinova Alina
  */
 //-------------------------------------------------------------------------------------------------
-#ifndef __WAPSTART_SWORDFISH_CFG_H__
-#define __WAPSTART_SWORDFISH_CFG_H__
+#ifndef __WAPSTART_SWORDFISH_CFG__H__
+#define __WAPSTART_SWORDFISH_CFG__H__
+//-------------------------------------------------------------------------------------------------
+#include <stdint.h>
 //-------------------------------------------------------------------------------------------------
 #include <boost/property_tree/ptree.hpp>
 //-------------------------------------------------------------------------------------------------
@@ -21,6 +23,7 @@ namespace wapstart {
     typedef LogLevel::type              log_level_type;
     typedef std::basic_istream<char>    stream_type;
     typedef boost::property_tree::ptree ptree_type;
+    typedef uint16_t                    port_type;
 
     struct file_not_found: public base_exception {
       typedef boost::errinfo_file_name name;
@@ -40,10 +43,42 @@ namespace wapstart {
      * @param path Path to a configation file.
      */ 
     void reload();
+    /**
+     *
+     */
+    port_type port() const;
+    /**
+     *
+     */
+    size_t workers() const;
     /** 
      *
      */
     log_level_type log_level() const;
+    /**
+     *
+     */
+    bool is_log_file() const;
+    /** 
+     *
+     */
+    bool is_log_syslog() const;
+    /**
+     *
+     */
+    bool is_log_stdout() const;
+    /**
+     *
+     */
+    std::string log_file_path() const;
+    /**
+     *
+     */
+    size_t log_file_rot_size() const;
+    /**
+     *
+     */
+    size_t log_file_rot_freq() const;
 #ifndef __UNIT_TESTING_ON
   private:
 #endif // __UNIT_TESTING_ON
@@ -60,6 +95,6 @@ namespace wapstart {
   //-----------------------------------------------------------------------------------------------
 } // namespace wapstart
 //-------------------------------------------------------------------------------------------------
-#endif // __WAPSTART_SWORDFISH_CFG_H__
+#endif // __WAPSTART_SWORDFISH_CFG__H__
 //-------------------------------------------------------------------------------------------------
 

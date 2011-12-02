@@ -32,7 +32,7 @@ namespace wapstart {
      * @param storage.
      */
     void operator()();
-    void Shutdowh(class_type& self);
+    void Shutdown();
     bool Configure(const std::string  &libpath = "/home/alina/sf_repo/trunk/misc/fill_func/libfiller.so",
                    const std::string  &func_name = "get_values");
 #ifndef __UNIT_TESTING_ON

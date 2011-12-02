@@ -34,6 +34,10 @@ namespace wapstart {
            Storage      &storage,
            port_type     port,
            size_type     workers = 10); 
+    /**
+     *  
+     */
+    ~Server();  
   private:
     Server(const class_type &);
     void operator =(const class_type &);

@@ -12,7 +12,7 @@
 
 namespace wapstart {
     
-  void AbstractFiller::Shutdowh(class_type& self)
+  void AbstractFiller::Shutdown()
   {
     boost::mutex::scoped_lock lock(state_mutex_);
     is_alive_ = false; 
@@ -60,15 +60,13 @@ namespace wapstart {
     while(is_alive())
     {
       k = 10;
-      do
+      while(storage_->queue_size() != 0  && --k > 0)
       {
         key = "";
         storage_->pop_key(key);
         if (!key.empty())
           keys.push_back(key);
-        
-      }while(storage_->queue_size() != 0  && --k > 0);
-
+      }
       if (keys.size() > 0)
       {
         get_vals(keys, vals);

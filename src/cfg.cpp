@@ -32,9 +32,49 @@ namespace wapstart {
     boost::property_tree::read_ini(stream, tree_);
   }
   //-----------------------------------------------------------------------------------------------
+  Config::port_type Config::port() const 
+  {
+    return tree_.get<port_type>("general.port", 9696);
+  }
+  //-------------------------------------------------------------------------------------------------
+  size_t Config::workers() const
+  {
+    return tree_.get<size_t>("general.workers", 3);
+  }
+  //-------------------------------------------------------------------------------------------------
   Config::log_level_type Config::log_level() const 
   {
-    return LogLevel::text2level(tree_.get<std::string>("general.log_level", "DEBUG"));
+    return LogLevel::text2level(tree_.get<std::string>("logging.log_level", "DEBUG"));
+  }
+  //-----------------------------------------------------------------------------------------------
+  bool Config::is_log_file() const 
+  {
+    return tree_.get<std::string>("logging.log_file", "off") == "on";
+  }
+  //-----------------------------------------------------------------------------------------------
+  bool Config::is_log_syslog() const 
+  {
+    return tree_.get<std::string>("logging.log_syslog", "off") == "on";
+  }
+  //-----------------------------------------------------------------------------------------------
+  bool Config::is_log_stdout() const 
+  {
+    return tree_.get<std::string>("logging.log_stdout", "off") == "on";
+  }
+  //-----------------------------------------------------------------------------------------------
+  std::string Config::log_file_path() const 
+  {
+    return tree_.get<std::string>("logging.log_file_path", "swordfish.log");
+  }
+  //-----------------------------------------------------------------------------------------------
+  size_t Config::log_file_rot_size() const 
+  {
+    return tree_.get<size_t>("logging.log_file_rot_size", 1024);
+  }
+  //-----------------------------------------------------------------------------------------------
+  size_t Config::log_file_rot_freq() const 
+  {
+    return tree_.get<size_t>("logging.log_file_rot_freq", 12);
   }
   //-----------------------------------------------------------------------------------------------
 } // namespace SU13

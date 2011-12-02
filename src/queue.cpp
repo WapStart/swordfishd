@@ -33,9 +33,14 @@ namespace wapstart {
   void Queue::wait_and_pop(data_type& data)
   {
     boost::mutex::scoped_lock lock(mutex_);
-    while(queue_.empty())
+    /*while(queue_.empty())
     {
       cv_.wait(lock);
+    }*/
+    if (queue_.empty())
+    {
+      data.clear();
+      return;
     }
     data = queue_.front();
     queue_.pop_front();
