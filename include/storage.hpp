@@ -32,7 +32,7 @@ namespace wapstart {
     /**
      *
      */
-    Storage(/* TODO configuration */);
+    Storage(uint ttl = 10, uint max_storage_size = 1000);
     /**
      *
      */
@@ -56,8 +56,9 @@ namespace wapstart {
 
 
     storage_type storage_;
-    queue_type    queue_;
-    stats_type    stats_;
+    queue_type   queue_;
+    stats_type   stats_;
+    uint         max_storage_size_;
     
   }; 
   //-----------------------------------------------------------------------------------------------

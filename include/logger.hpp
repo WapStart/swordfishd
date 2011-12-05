@@ -29,11 +29,13 @@ namespace wapstart {
     return swordfish_logger();
   }
   //-----------------------------------------------------------------------------------------------
+  void set_log_severity_level(LogLevel::type level);
+  //-----------------------------------------------------------------------------------------------
   /**
    * Инициализирует файловый логгер.
    * @param path_base  
    * @param rot_size Частота ротирования в часах.
-   * @param rot_frequency Размер ротирования в байтах. 
+   * @param rot_frequency Размер ротирования в мегабайтах. 
    */
   void file_logger_init(const std::string &path_base,
                         size_t             rot_size,

@@ -34,7 +34,7 @@ namespace wapstart {
     return deleted_;
   }
 //-------------------------------------------------------------------------------------------------
-
+#include <stdio.h>
   bool Hashmap::get(const key_type& key, val_type& val)
   {
     {
@@ -45,6 +45,10 @@ namespace wapstart {
     hashmap_type::iterator it = map_.find(key);
     if (it != map_.end())
     {
+      
+      //printf("len  = %u\n", val.length());
+      //printf("len  = %s\n", val.c_str());
+      
       val = it->second.first;
       return true;
     }

@@ -8,8 +8,9 @@
 #include "boost/lexical_cast.hpp"
 //-------------------------------------------------------------------------------------------------
 namespace wapstart {
-  Storage::Storage(/* TODO Configuration */)
-    : storage_(storage_type::ttl_type(0,0,10))
+  Storage::Storage(uint ttl, uint max_storage_size)
+    : storage_(storage_type::ttl_type(0,0,ttl)),
+      max_storage_size_(max_storage_size)
   {
   }
   //-----------------------------------------------------------------------------------------------
@@ -34,6 +35,8 @@ namespace wapstart {
 
   void Storage::add_item(const key_type& key, const val_type& val)
   {
+    //if (storage_.get_storage_size() >= max_storage_size_)
+    //  expirate();
     storage_.add(key, val); 
   }
 //-------------------------------------------------------------------------------------------------
@@ -99,7 +102,7 @@ namespace wapstart {
     }
     refresh_stats();
     res += "END\r\n";
-    printf("res: %s", res.c_str());
+    //printf("res: %s", res.c_str());
     return true;
   }
 //-----------------------------------------------------------------------------------------------

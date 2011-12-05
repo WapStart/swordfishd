@@ -77,6 +77,7 @@ namespace wapstart {
         {
           storage_->add_item(*key_it++, *val_it++);
         }
+        keys.clear();
       }
       else sleep(1);
     }

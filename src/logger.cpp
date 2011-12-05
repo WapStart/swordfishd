@@ -12,6 +12,7 @@
 #include <boost/log/formatters/date_time.hpp>
 #include <boost/log/formatters/message.hpp>
 #include <boost/log/utility/empty_deleter.hpp>
+#include <boost/log/filters.hpp>
 #include <boost/shared_ptr.hpp>
 //-------------------------------------------------------------------------------------------------
 #include "logger.hpp"
@@ -22,9 +23,21 @@ namespace wapstart {
     {
       boost::log::add_common_attributes<char>();
     }
-    //--------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------
   } // namespace privacy
-  //---------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------
+  void set_log_severity_level(LogLevel::type type)
+  {
+    using namespace boost::log;
+    
+    boost::shared_ptr<core> c = core::get();
+
+    c->set_filter
+    (
+      filters::attr<LogLevel::type >("Severity") <= type
+    );
+  }
+  //-----------------------------------------------------------------------------------------------
   void file_logger_init(const std::string &path_base,
                         size_t             rot_size,
                         size_t             rot_frequency)
@@ -37,10 +50,11 @@ namespace wapstart {
     (
       boost::log::keywords::file_name = name_pattern,       
       // Ротируем каждые rot_size байтов
-      keywords::rotation_size = rot_size,
+      keywords::rotation_size = 1024 * 1024 * rot_size,
       // Или каждые rot_frequency часов
       keywords::time_based_rotation =sinks::file::rotation_at_time_interval(
         boost::posix_time::time_duration(rot_frequency, 0, 0, 0)),
+      keywords::auto_flush = true,
       keywords::format = 
         (
           formatters::stream << "[" 
