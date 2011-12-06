@@ -44,7 +44,9 @@ namespace wapstart {
     void expirate();
     void res_append(const arg_type& arg, const val_type& value, result_type& res);
     
-    size_t queue_size(); 
+    size_t queue_size();
+    size_t max_storage_size() {return max_storage_size_;}; 
+    size_t storage_size() {return storage_.get_storage_size();};
   private:
     
     Storage(const class_type &);

@@ -23,7 +23,7 @@ namespace wapstart {
     while (it != map_.end())
     {
       time_type max_time = it->second.second + ttl_;
-      if ( max_time > boost::date_time::second_clock<time_type>::local_time() )
+      if ( max_time < boost::date_time::second_clock<time_type>::local_time() )
       {
         it = map_.erase(it);
         ++deleted_;

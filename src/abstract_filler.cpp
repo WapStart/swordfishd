@@ -59,8 +59,10 @@ namespace wapstart {
     size_t k;
     while(is_alive())
     {
-      k = 10;
-      while(storage_->queue_size() != 0  && --k > 0)
+      k = storage_->max_storage_size();
+      if (k - storage_->storage_size() == 0)
+        storage_->expirate();
+      while(storage_->queue_size() != 0  && k - storage_->storage_size()  > 0)
       {
         key = "";
         storage_->pop_key(key);

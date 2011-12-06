@@ -49,11 +49,11 @@ namespace wapstart {
     /**
      *
      */
-    Storage storage_;
+    Storage *storage_;
     /**
      *  
      */
-    AbstractFiller filler_;
+    AbstractFiller *filler_;
     /**
      *  
      */

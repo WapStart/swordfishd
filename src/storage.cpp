@@ -9,7 +9,7 @@
 //-------------------------------------------------------------------------------------------------
 namespace wapstart {
   Storage::Storage(uint ttl, uint max_storage_size)
-    : storage_(storage_type::ttl_type(0,ttl,0)),
+    : storage_(storage_type::ttl_type(boost::posix_time::seconds(ttl))),
       max_storage_size_(max_storage_size)
   {
   }

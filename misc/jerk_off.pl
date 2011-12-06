@@ -2,7 +2,7 @@
 
 use IO::Socket;
 
-use constant REPETITIONS_NUMBER => 5;
+use constant REPETITIONS_NUMBER => 30;
  
 my $get_cmd  = "get key";
 
@@ -17,8 +17,8 @@ for(my $x = 0; $x < REPETITIONS_NUMBER; ++$x) {
   die "Could not create socket: $!\n" unless $sock;
  
   #print "begin write!\n";
-  print $get_cmd.($x+120)."\r\n";
-  print $sock $get_cmd.($x+120)."\r\n";
+  print $get_cmd.($x+145)."\r\n";
+  print $sock $get_cmd.($x+145)."\r\n";
   #print "end write!\n";
   my $var = <$sock>;
   my $var2 = "empty";

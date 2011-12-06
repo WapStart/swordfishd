@@ -20,9 +20,10 @@ namespace wapstart {
   //-----------------------------------------------------------------------------------------------
   Daemon::Daemon(const std::string &config_path): 
     cfg_(config_path), 
-    filler_(&storage_),
     done_(false), 
     server_(NULL),
+    storage_(NULL),
+    filler_(NULL),
     filler_thread_(NULL)
   {
     ugly::__this = this;
@@ -170,16 +171,22 @@ namespace wapstart {
   {
     reset_server();
 
+    __LOG_DEBUG << "I'm creating the storage...";
+    storage_ = new Storage(cfg_.storage_ttl(), cfg_.storage_size());
+
+    __LOG_DEBUG << "I'm creating the filler...";
+    filler_ = new AbstractFiller(storage_);
+      
     __LOG_DEBUG << "I'm configuring the filler...";
-    filler_.Configure(cfg_.filler());
+    filler_->Configure(cfg_.filler());
 
     __LOG_DEBUG << "I'm creating the filler thread...";
     // Создаем поток наполнятора
-    filler_thread_ = new boost::thread(boost::ref(filler_));
+    filler_thread_ = new boost::thread(boost::ref(*filler_));
     
     __LOG_DEBUG << "I'm creating the server...";
     // Конструируем новый сервер
-    server_ = new Server(service_, storage_, cfg_.port(), cfg_.workers());
+    server_ = new Server(service_, *storage_, cfg_.port(), cfg_.workers());
   }
   //-----------------------------------------------------------------------------------------------
   void Daemon::reset_server()
@@ -187,7 +194,7 @@ namespace wapstart {
     if(filler_thread_) {
       __LOG_DEBUG << "I'm stopping the filler thread...";
       // Останавливаем поток наполнятора
-      filler_.Shutdown();
+      filler_->Shutdown();
       filler_thread_->join();
       delete filler_thread_;
     }
@@ -196,6 +203,16 @@ namespace wapstart {
     if(server_) {
       __LOG_DEBUG << "I'm stopping the server...";
       delete server_;
+    }
+
+    if(filler_) {
+      __LOG_DEBUG << "I'm deleting the filler...";
+      delete filler_;
+    }
+
+    if(storage_) {
+      __LOG_DEBUG << "I'm deleting the storage...";
+      delete storage_;
     }
   }
   //-----------------------------------------------------------------------------------------------
@@ -220,7 +237,7 @@ namespace wapstart {
   {
     __LOG_INFO << "I'm expirating the storage...";
     
-    storage_.expirate();
+    storage_->expirate();
   }
   //-----------------------------------------------------------------------------------------------
 } // namespace wapstart
