@@ -20,13 +20,6 @@ namespace wapstart {
   {
     acceptor_.async_accept(worker_->socket(), boost::bind(
       &Server::on_accept, this, boost::asio::placeholders::error)); 
-  
-    // for debug only
-    storage_.add_item("111", "bingo111!");
-    storage_.add_item("5", "bingo5!");
-    storage_.add_item("6", "bingo6!");
-    storage_.add_item("7", "bingo7!");
-    
   }
   //-----------------------------------------------------------------------------------------------
   Server::~Server()

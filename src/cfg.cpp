@@ -36,12 +36,28 @@ namespace wapstart {
   {
     return tree_.get<port_type>("general.port", 9696);
   }
-  //-------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------
   size_t Config::workers() const
   {
     return tree_.get<size_t>("general.workers", 3);
   }
-  //-------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------
+  std::string Config::filler() const
+  {
+    return tree_.get<std::string>("general.filler", 
+        "/home/alina/sf_repo/trunk/misc/fill_func/libfiller.so");
+  }
+  //-----------------------------------------------------------------------------------------------
+  size_t Config::storage_size() const
+  {
+    return tree_.get<size_t>("general.storage_size", 1000);
+  }
+  //-----------------------------------------------------------------------------------------------
+  size_t Config::storage_ttl() const
+  {
+    return tree_.get<size_t>("general.storage_ttl", 10);
+  }
+  //-----------------------------------------------------------------------------------------------
   Config::log_level_type Config::log_level() const 
   {
     return LogLevel::text2level(tree_.get<std::string>("logging.log_level", "DEBUG"));

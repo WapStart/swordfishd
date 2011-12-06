@@ -171,7 +171,7 @@ namespace wapstart {
     reset_server();
 
     __LOG_DEBUG << "I'm configuring the filler...";
-    filler_.Configure();
+    filler_.Configure(cfg_.filler());
 
     __LOG_DEBUG << "I'm creating the filler thread...";
     // Создаем поток наполнятора

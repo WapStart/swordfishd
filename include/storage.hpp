@@ -32,7 +32,7 @@ namespace wapstart {
     /**
      *
      */
-    Storage(uint ttl = 10, uint max_storage_size = 1000);
+    Storage(uint ttl = 10, uint max_storage_size = 10);
     /**
      *
      */

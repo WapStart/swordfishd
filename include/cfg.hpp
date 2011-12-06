@@ -51,6 +51,18 @@ namespace wapstart {
      *
      */
     size_t workers() const;
+    /**
+     *
+     */
+    std::string filler() const;
+    /**
+     *
+     */
+    size_t storage_size() const;
+    /**
+     *  
+     */
+    size_t storage_ttl() const;
     /** 
      *
      */
