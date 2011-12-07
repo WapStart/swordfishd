@@ -38,6 +38,11 @@ namespace wapstart {
           
           Command cmd(command_line);
 
+          if (cmd.name() == "quit")
+          {
+            socket_.close();
+            break;
+          }
           std::string message;
           storage_._do(cmd, message);
           

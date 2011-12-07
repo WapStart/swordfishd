@@ -2,7 +2,7 @@
 
 use IO::Socket;
 
-use constant REPETITIONS_NUMBER => 30;
+use constant REPETITIONS_NUMBER => 300000;
  
 my $get_cmd  = "get key";
 
