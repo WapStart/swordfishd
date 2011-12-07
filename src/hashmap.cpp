@@ -4,6 +4,7 @@
  */
 //-------------------------------------------------------------------------------------------------
 #include "hashmap.hpp"
+#include "logger.hpp"
 //-------------------------------------------------------------------------------------------------
 namespace wapstart {
 //-------------------------------------------------------------------------------------------------
@@ -31,6 +32,7 @@ namespace wapstart {
       else
         ++it;
     }
+    __LOG_DEBUG << "[Hashmap::expirate()] Deleted " << deleted_ << " items";
     return deleted_;
   }
 //-------------------------------------------------------------------------------------------------
@@ -45,13 +47,14 @@ namespace wapstart {
     hashmap_type::iterator it = map_.find(key);
     if (it != map_.end())
     {
-      
-      //printf("len  = %u\n", val.length());
-      //printf("len  = %s\n", val.c_str());
-      
       val = it->second.first;
+      __LOG_DEBUG << "[Hashmap::get] key " << key << " value " << val;
+      it->second.second = boost::date_time::second_clock<time_type>::local_time();
+      __LOG_DEBUG << "[Hashmap::add] refresh ttl key " << key << " value " << val;
+
       return true;
     }
+    __LOG_DEBUG << "[Hashmap::get] missing get key " << key;
     return false;
   }
 //-------------------------------------------------------------------------------------------------
@@ -67,7 +70,10 @@ namespace wapstart {
       // такое уже есть, обновить значение и ttl
       res.first->second.first = val;
       res.first->second.second = boost::date_time::second_clock<time_type>::local_time();
+      __LOG_DEBUG << "[Hashmap::add] refresh ttl key " << key << " value " << val;
     }
+    else
+      __LOG_DEBUG << "[Hashmap::add] new item key " << key << " value " << val; 
     return true;
   }
 //-------------------------------------------------------------------------------------------------

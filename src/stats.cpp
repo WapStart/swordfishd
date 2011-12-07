@@ -1,6 +1,7 @@
 #include <stats.hpp>
 #include <sstream>
 #include <stdio.h>
+#include "logger.hpp"
 namespace wapstart {
   Stats::Stats()
   {
@@ -23,8 +24,10 @@ namespace wapstart {
     
     result = ss.str();
     
-    printf("[Stats::get] result: %s\n", result.c_str());
-    
+    //printf("[Stats::get] result: %s\n", result.c_str());
+    __LOG_DEBUG << "[Stats::get] uptime " << boost::date_time::second_clock<time_type>::local_time() - start_time_ 
+               << " storage size: " << storage_size_ << " deleted: " << deleted_ << " gets " << gets_ 
+               << " queue size: " << queue_size_; 
     return true;
   }
 

@@ -138,15 +138,15 @@ namespace wapstart {
 
     __LOG_DEBUG << "setsid()...";
     
-    //setsid();
+    setsid();
     
     __LOG_DEBUG << "chdir(\"/\")...";
 
-    //chdir("/");
+    chdir("/");
     
     __LOG_DEBUG << "umask(0)...";
     
-    //umask(0);
+    umask(0);
 
     if(pid_t pid = fork()) {
       if(pid > 0) {

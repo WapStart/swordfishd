@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "storage.hpp"
 #include "boost/lexical_cast.hpp"
+#include "logger.hpp"
 //-------------------------------------------------------------------------------------------------
 namespace wapstart {
   Storage::Storage(uint ttl, uint max_storage_size)
@@ -38,7 +39,7 @@ namespace wapstart {
     while (storage_.get_storage_size() >= max_storage_size_)
     {
       expirate();
-      //refresh_stats();
+      refresh_stats();
       sleep(1);
     }
     storage_.add(key, val); 
@@ -48,6 +49,7 @@ namespace wapstart {
 
   void Storage::reset_stats()
   {
+    __LOG_DEBUG << "[Storage::reset_stats]";
     stats_.set_start_time();
     stats_.set_storage_size(storage_.get_storage_size());
     stats_.set_deleted(0);
@@ -82,6 +84,7 @@ namespace wapstart {
 
   void Storage::refresh_stats()
   {
+    __LOG_DEBUG << "[Storage::refresh_stats]"; 
     stats_.set_storage_size(storage_.get_storage_size());
     stats_.set_deleted(storage_.get_deleted());
     stats_.set_queue_size(queue_.size());

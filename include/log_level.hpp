@@ -7,6 +7,7 @@
 #define __WAPSTART_SWORDFISH_LOG_LEVEL__H__
 //-------------------------------------------------------------------------------------------------
 #include <ostream>
+#include <unistd.h>
 //-------------------------------------------------------------------------------------------------
 #define __CAST_NAME_TO_LEVEL(X, SHORT_NAME, LONG_NAME) \
   if(X == #SHORT_NAME || X == #LONG_NAME) return SHORT_NAME; 
@@ -42,6 +43,7 @@ namespace wapstart {
   inline std::basic_ostream< CharT, TraitsT >& operator << (
     std::basic_ostream< CharT, TraitsT >& strm, LogLevel::type lvl)
   {
+    strm << "swordfish-" << getpid() << " ";
     switch (lvl)
     {
     case LogLevel::EMERG:

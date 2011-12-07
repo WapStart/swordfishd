@@ -4,6 +4,7 @@
 */
 //-------------------------------------------------------------------------------------------------
 #include "queue.hpp"
+#include "logger.hpp"
 //-------------------------------------------------------------------------------------------------
 #include <algorithm>
 //-------------------------------------------------------------------------------------------------
@@ -17,7 +18,12 @@ namespace wapstart {
   {
     boost::mutex::scoped_lock lock(mutex_);
     if (std::find(queue_.begin(), queue_.end(), data) == queue_.end())
+    {
       queue_.push_back(data);
+      __LOG_DEBUG << "[Queue::push] add item:" << data;
+    }
+    else
+      __LOG_DEBUG << "[Queue::push] already in queue item: " << data;
     uint size = queue_.size();
     lock.unlock();
     cv_.notify_one(); 
@@ -39,6 +45,7 @@ namespace wapstart {
     }*/
     if (queue_.empty())
     {
+      __LOG_DEBUG << "[Queue::wait_and_pop] queue empty";
       data.clear();
       return;
     }

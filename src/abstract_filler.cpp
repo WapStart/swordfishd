@@ -8,12 +8,14 @@
 #include "filler.h"
 #include "boost/pointer_cast.hpp"
 #include <stdio.h>
+#include "logger.hpp"
 //-------------------------------------------------------------------------------------------------
 
 namespace wapstart {
     
   void AbstractFiller::Shutdown()
   {
+    __LOG_DEBUG << "I'm stopping filler thread...";
     boost::mutex::scoped_lock lock(state_mutex_);
     is_alive_ = false; 
   }
@@ -33,17 +35,19 @@ namespace wapstart {
     lib_handle_ = dlopen(libpath.c_str(), RTLD_LAZY);
     if (!lib_handle_) 
     {
-      printf("Error: [AbstractFiller::Configure] Cannot load lib %s, errno:%s\n", libpath.c_str(), dlerror());
+      //printf("Error: [AbstractFiller::Configure] Cannot load lib %s, errno:%s\n", libpath.c_str(), dlerror());
+      __LOG_CRIT << "[AbstractFiller::Configure] Cannot load lib " << libpath << ". " << dlerror(); 
       exit(1);
     }
     get_vals = (get_vals_type)(dlsym(lib_handle_, "get_values_from_outside"));
     char * error;
     if ((error = dlerror()) != NULL)  
     {
-      printf("Error: [AbstractFiller::Configure] Cannot load filler func. error: %s\n", error);
+      //printf("Error: [AbstractFiller::Configure] Cannot load filler func. error: %s\n", error);
+      __LOG_CRIT << "[AbstractFiller::Configure] Cannot load filler func. " << error;
       exit(1);
     }
-    //dlclose(lib_handle);
+    __LOG_DEBUG << "Filler function loaded";
     configured_ = true;
   }
 //-------------------------------------------------------------------------------------------------
@@ -51,7 +55,7 @@ namespace wapstart {
   {
     if(!configured_) 
     {
-      printf("Error: [AbstractFiller::operator()()] filler not configured\n");
+      __LOG_CRIT << "[AbstractFiller::operator()()] filler not configured";
       exit(1);
     }
     std::string key;
@@ -84,6 +88,7 @@ namespace wapstart {
       }
       else sleep(10);
     }
+    __LOG_DEBUG << "Filler stopped";
   }
 
   bool AbstractFiller::is_alive()
