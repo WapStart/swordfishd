@@ -86,7 +86,7 @@ namespace wapstart {
         }
         keys.clear();
       }
-      else sleep(10);
+      else sleep(1);
     }
     __LOG_DEBUG << "Filler stopped";
   }

@@ -24,8 +24,18 @@ namespace wapstart {
       boost::log::add_common_attributes<char>();
     }
     //---------------------------------------------------------------------------------------------
+    bool check_file(const std::string &file) 
+    {
+      FILE *f = fopen(file.c_str(), "w");
+      if(f) {
+        fclose(f);
+        return true;
+      }
+      return false;
+    }
+    //---------------------------------------------------------------------------------------------
   } // namespace privacy
-  //------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------
   void set_log_severity_level(LogLevel::type type)
   {
     using namespace boost::log;
@@ -43,6 +53,11 @@ namespace wapstart {
                         size_t             rot_frequency)
   {
     using namespace boost::log; 
+
+    if(!privacy::check_file(path_base)) {
+      __LOG_ERROR << "Failed to open '" << path_base << "' for logging...";
+      return;
+    }
       
     const std::string name_pattern = path_base + ".%N";
       
@@ -55,6 +70,7 @@ namespace wapstart {
       keywords::time_based_rotation =sinks::file::rotation_at_time_interval(
         boost::posix_time::time_duration(rot_frequency, 0, 0, 0)),
       keywords::auto_flush = true,
+      keywords::open_mode = std::ios_base::app,
       keywords::format = 
         (
           formatters::stream << "[" 

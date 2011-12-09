@@ -57,6 +57,8 @@ namespace wapstart {
     
         service_.reset();
       
+        __LOG_INFO << "Start message loop...";
+        
         service_.run(ec);
 
         __LOG_INFO << "Event loop stopped (" << ec << ")...";
@@ -71,18 +73,18 @@ namespace wapstart {
   {
     set_log_severity_level(cfg_.log_level());
     
-    if(cfg_.is_log_file()) {
-      file_logger_init(cfg_.log_file_path(),
-                       cfg_.log_file_rot_size(),
-                       cfg_.log_file_rot_freq());
-    }
-
     if(cfg_.is_log_syslog()) {
       syslog_logger_init();
     }
 
     if(cfg_.is_log_stdout()) {
       stdout_logger_init();
+    }
+    
+    if(cfg_.is_log_file()) {
+      file_logger_init(cfg_.log_file_path(),
+                       cfg_.log_file_rot_size(),
+                       cfg_.log_file_rot_freq());
     }
   }
   //-----------------------------------------------------------------------------------------------
