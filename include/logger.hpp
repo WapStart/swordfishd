@@ -29,27 +29,33 @@ namespace wapstart {
     return swordfish_logger();
   }
   //-----------------------------------------------------------------------------------------------
-  void set_log_severity_level(LogLevel::type level);
+  void logger_set_severity_level(LogLevel::type level);
   //-----------------------------------------------------------------------------------------------
   /**
    * Инициализирует файловый логгер.
-   * @param path_base  
-   * @param rot_size Частота ротирования в часах.
-   * @param rot_frequency Размер ротирования в мегабайтах. 
+   * @param path Путь к файлу журнала.
    */
-  void file_logger_init(const std::string &path_base,
-                        size_t             rot_size,
-                        size_t             rot_frequency);
+  bool logger_file_sink_init(const std::string &path);
   //-----------------------------------------------------------------------------------------------
   /**
    *
    */
-  void syslog_logger_init();
-  //----------------------------------------------------------------------------------------------
+  void logger_syslog_sink_init();
+  //-----------------------------------------------------------------------------------------------
   /**
    *
    */
-  void stdout_logger_init();
+  void logger_stdout_sink_init();
+  //-----------------------------------------------------------------------------------------------
+  /**
+   *  
+   */
+  void logger_backends_init_start();
+  //-----------------------------------------------------------------------------------------------
+  /**
+   *
+   */
+  void logger_backends_init_commit();
   //-----------------------------------------------------------------------------------------------
 #define __LOG(LEVEL) BOOST_LOG_SEV(wapstart::logger::get(), LEVEL)
 #define __LOG_EMERG  __LOG(wapstart::LogLevel::EMERG)

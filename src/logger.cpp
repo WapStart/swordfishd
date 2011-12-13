@@ -14,11 +14,22 @@
 #include <boost/log/utility/empty_deleter.hpp>
 #include <boost/log/filters.hpp>
 #include <boost/shared_ptr.hpp>
+#include <fstream>
 //-------------------------------------------------------------------------------------------------
 #include "logger.hpp"
 //-------------------------------------------------------------------------------------------------
 namespace wapstart {
   namespace privacy {
+    typedef boost::log::sinks::synchronous_sink
+      <boost::log::sinks::syslog_backend> syslog_sink_type;
+    typedef boost::log::sinks::synchronous_sink<
+      boost::log::sinks::text_ostream_backend> text_stream_sink_type;
+    
+    boost::shared_ptr<syslog_sink_type> syslog_sink;
+    boost::shared_ptr<text_stream_sink_type> text_stream_sink;
+    boost::shared_ptr<boost::log::sinks::syslog_backend>       syslog_backend;
+    boost::shared_ptr<boost::log::sinks::text_ostream_backend> text_stream_backend;
+    //---------------------------------------------------------------------------------------------
     void logger_init() 
     {
       boost::log::add_common_attributes<char>();
@@ -26,7 +37,7 @@ namespace wapstart {
     //---------------------------------------------------------------------------------------------
     bool check_file(const std::string &file) 
     {
-      FILE *f = fopen(file.c_str(), "w");
+      FILE *f = fopen(file.c_str(), "a");
       if(f) {
         fclose(f);
         return true;
@@ -36,60 +47,44 @@ namespace wapstart {
     //---------------------------------------------------------------------------------------------
   } // namespace privacy
   //-----------------------------------------------------------------------------------------------
-  void set_log_severity_level(LogLevel::type type)
+  void logger_set_severity_level(LogLevel::type type)
   {
     using namespace boost::log;
     
     boost::shared_ptr<core> c = core::get();
 
+    c->reset_filter();
+    
     c->set_filter
     (
       filters::attr<LogLevel::type >("Severity") <= type
     );
   }
   //-----------------------------------------------------------------------------------------------
-  void file_logger_init(const std::string &path_base,
-                        size_t             rot_size,
-                        size_t             rot_frequency)
-  {
-    using namespace boost::log; 
-
-    if(!privacy::check_file(path_base)) {
-      __LOG_ERROR << "Failed to open '" << path_base << "' for logging...";
-      return;
-    }
-      
-    const std::string name_pattern = path_base + ".%N";
-      
-    init_log_to_file
-    (
-      boost::log::keywords::file_name = name_pattern,       
-      // Ротируем каждые rot_size байтов
-      keywords::rotation_size = 1024 * 1024 * rot_size,
-      // Или каждые rot_frequency часов
-      keywords::time_based_rotation =sinks::file::rotation_at_time_interval(
-        boost::posix_time::time_duration(rot_frequency, 0, 0, 0)),
-      keywords::auto_flush = true,
-      keywords::open_mode = std::ios_base::app,
-      keywords::format = 
-        (
-          formatters::stream << "[" 
-                             << formatters::date_time<boost::posix_time::ptime>("TimeStamp")
-                             << " "
-                             << formatters::attr<LogLevel::type>("Severity")
-                             << "] "
-                             << formatters::message<char>()
-        )
-    );
-  }
-  //-----------------------------------------------------------------------------------------------
-  void syslog_logger_init()
+  bool logger_file_sink_init(const std::string &path)
   {
     using namespace boost::log;
-
+    
+    if(!privacy::check_file(path)) {
+      return false;
+    }
+    
     boost::shared_ptr<core> c = core::get();
+
+    if(!privacy::text_stream_backend)
+      privacy::text_stream_backend.reset(new sinks::text_ostream_backend());
+    
+    privacy::text_stream_backend->add_stream(
+        boost::shared_ptr<std::ostream>(new std::ofstream(path.c_str(), std::ios_base::app)));
+
+    return true;
+  }
+  //-----------------------------------------------------------------------------------------------
+  void logger_syslog_sink_init()
+  {
+    using namespace boost::log;
         
-    boost::shared_ptr<sinks::syslog_backend> backend(
+    privacy::syslog_backend.reset(
       new sinks::syslog_backend
         (
         keywords::facility = sinks::syslog::user,
@@ -97,46 +92,79 @@ namespace wapstart {
         )
     );
 
-    backend->set_severity_mapper(sinks::syslog::direct_severity_mapping<int>("Severity"));
-
-    typedef sinks::synchronous_sink<sinks::syslog_backend> sink_t;
-    boost::shared_ptr<sink_t> sink = boost::make_shared<sink_t>(backend);
-    sink->locked_backend()->set_formatter(
-          formatters::stream << "[" 
-                             << formatters::attr<LogLevel::type>("Severity")
-                             << "] "
-                             << formatters::message<char>()
-    ); 
-    
-    c->add_sink(sink);
+    privacy::syslog_backend->set_severity_mapper(
+        sinks::syslog::direct_severity_mapping<int>("Severity"));
   }
   //-----------------------------------------------------------------------------------------------
-  void stdout_logger_init()
+  void logger_stdout_sink_init()
   { 
     using namespace boost::log;
     
     boost::shared_ptr<core> c = core::get();
 
-    boost::shared_ptr<sinks::text_ostream_backend> backend =
-      boost::make_shared<sinks::text_ostream_backend>();
+    if(!privacy::text_stream_backend)
+      privacy::text_stream_backend.reset(new sinks::text_ostream_backend());
     
-    backend->add_stream(boost::shared_ptr<std::ostream>(&std::cout, empty_deleter()));
-
-    // Enable auto-flushing after each log record written
-    backend->auto_flush(true);
-
-    typedef sinks::synchronous_sink< sinks::text_ostream_backend > sink_t;
-    boost::shared_ptr<sink_t> sink = boost::make_shared<sink_t>(backend);
-    sink->locked_backend()->set_formatter(
-      formatters::stream << "[" 
-                         << formatters::date_time<boost::posix_time::ptime>("TimeStamp")
-                         << " "
-                         << formatters::attr<LogLevel::type>("Severity")
-                         << "] "
-                         << formatters::message<char>()
-    );
+    privacy::text_stream_backend->add_stream(
+        boost::shared_ptr<std::ostream>(&std::cout, empty_deleter()));
+  }
+  //-----------------------------------------------------------------------------------------------
+  void logger_backends_init_start()
+  {
+    using namespace boost::log;
     
-    c->add_sink(sink);
+    boost::shared_ptr<core> c = core::get();
+    
+    if(privacy::text_stream_sink) {
+      c->remove_sink(privacy::text_stream_sink);
+      privacy::text_stream_sink.reset();
+      privacy::text_stream_backend.reset();
+    }
+
+    if(privacy::syslog_sink) {
+      c->remove_sink(privacy::syslog_sink);
+      privacy::syslog_sink.reset();
+      privacy::syslog_backend.reset();
+    }
+  }
+  //-----------------------------------------------------------------------------------------------
+  void logger_backends_init_commit()
+  {
+    using namespace boost::log;
+    
+    boost::shared_ptr<core> c = core::get();
+    
+    if(privacy::text_stream_backend) {
+      privacy::text_stream_backend->auto_flush(true);
+
+      privacy::text_stream_sink.reset(new 
+          privacy::text_stream_sink_type(privacy::text_stream_backend));
+      
+      privacy::text_stream_sink->locked_backend()->set_formatter(
+        formatters::stream << "[" 
+                           << formatters::date_time<boost::posix_time::ptime>("TimeStamp")
+                           << " "
+                           << formatters::attr<LogLevel::type>("Severity")
+                           << "] "
+                           << formatters::message<char>()
+      );
+
+      c->add_sink(privacy::text_stream_sink);
+    }
+
+    if(privacy::syslog_backend) {
+      privacy::syslog_sink.reset(new 
+          privacy::syslog_sink_type(privacy::syslog_backend));
+    
+      privacy::syslog_sink->locked_backend()->set_formatter(
+        formatters::stream << "[" 
+                           << formatters::date_time<boost::posix_time::ptime>("TimeStamp")
+                           << " "
+                           << formatters::attr<LogLevel::type>("Severity")
+                           << "] "
+                           << formatters::message<char>()
+        );
+    }
   }
   //-----------------------------------------------------------------------------------------------
 } // namespace wapstart

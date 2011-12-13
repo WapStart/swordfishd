@@ -83,14 +83,6 @@ namespace wapstart {
      *
      */
     std::string log_file_path() const;
-    /**
-     *
-     */
-    size_t log_file_rot_size() const;
-    /**
-     *
-     */
-    size_t log_file_rot_freq() const;
 #ifndef __UNIT_TESTING_ON
   private:
 #endif // __UNIT_TESTING_ON

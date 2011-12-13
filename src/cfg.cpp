@@ -83,16 +83,6 @@ namespace wapstart {
     return tree_.get<std::string>("logging.log_file_path", "swordfish.log");
   }
   //-----------------------------------------------------------------------------------------------
-  size_t Config::log_file_rot_size() const 
-  {
-    return tree_.get<size_t>("logging.log_file_rot_size", 1024);
-  }
-  //-----------------------------------------------------------------------------------------------
-  size_t Config::log_file_rot_freq() const 
-  {
-    return tree_.get<size_t>("logging.log_file_rot_freq", 12);
-  }
-  //-----------------------------------------------------------------------------------------------
 } // namespace SU13
 //-------------------------------------------------------------------------------------------------
 

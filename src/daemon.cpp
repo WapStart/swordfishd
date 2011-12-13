@@ -42,14 +42,14 @@ namespace wapstart {
     try {
 
       if(is_daemonize) daemonize();
-    
-      //init_logger();
 
       boost::system::error_code ec;
       
-      __LOG_INFO << "I'm starting...";
+      // Счетчик перезапусков
+      std::size_t rn = 0;
       
       while(!done_) {
+        if(rn) init_logger();
         
         create_server();
       
@@ -57,7 +57,8 @@ namespace wapstart {
     
         service_.reset();
       
-        __LOG_INFO << "Start message loop...";
+        __LOG_INFO << "I have started " << ++rn << " time...";
+        __LOG_INFO << "I'm waiting for the events...";
         
         service_.run(ec);
 
@@ -71,21 +72,28 @@ namespace wapstart {
   //-----------------------------------------------------------------------------------------------
   void Daemon::init_logger()
   {
-    set_log_severity_level(cfg_.log_level());
+    bool fl = false;
+    
+    logger_set_severity_level(cfg_.log_level());
+    
+    logger_backends_init_start();
     
     if(cfg_.is_log_syslog()) {
-      syslog_logger_init();
+      logger_syslog_sink_init();
     }
 
     if(cfg_.is_log_stdout()) {
-      stdout_logger_init();
+      logger_stdout_sink_init();
     }
     
     if(cfg_.is_log_file()) {
-      file_logger_init(cfg_.log_file_path(),
-                       cfg_.log_file_rot_size(),
-                       cfg_.log_file_rot_freq());
+      fl = logger_file_sink_init(cfg_.log_file_path());
     }
+
+    logger_backends_init_commit();
+
+    if(cfg_.is_log_file() && !fl)
+      __LOG_ERROR << "Failed to open '" << cfg_.log_file_path() << "' for logging...";
   }
   //-----------------------------------------------------------------------------------------------
   void Daemon::set_signal_handlers() 
