@@ -43,26 +43,22 @@ namespace wapstart {
 
       if(is_daemonize) daemonize();
 
-      boost::system::error_code ec;
-      
       // Счетчик перезапусков
       std::size_t rn = 0;
-      
+
       while(!done_) {
-        if(rn) init_logger();
+        if(rn++) init_logger();
         
         create_server();
       
         set_signal_handlers();
-    
-        service_.reset();
-      
-        __LOG_INFO << "I have started " << ++rn << " time...";
-        __LOG_INFO << "I'm waiting for the events...";
         
-        service_.run(ec);
+        __LOG_INFO << "I have started " << rn << " time...";
+        __LOG_INFO << "I'm waiting for the events...";
+      
+        server_->run();
 
-        __LOG_INFO << "Event loop stopped (" << ec << ")...";
+        __LOG_INFO << "Event loop has stopped...";
       }
     }
     catch(const std::exception &x) {
@@ -73,8 +69,6 @@ namespace wapstart {
   void Daemon::init_logger()
   {
     bool fl = false;
-    
-    logger_set_severity_level(cfg_.log_level());
     
     logger_backends_init_start();
     
@@ -89,6 +83,8 @@ namespace wapstart {
     if(cfg_.is_log_file()) {
       fl = logger_file_sink_init(cfg_.log_file_path());
     }
+    
+    logger_set_severity_level(cfg_.log_level());
 
     logger_backends_init_commit();
 
@@ -212,6 +208,7 @@ namespace wapstart {
     // Все должно корректно остановиться в деструкторах
     if(server_) {
       __LOG_DEBUG << "I'm stopping the server...";
+      server_->stop();
       delete server_;
     }
 
@@ -231,7 +228,8 @@ namespace wapstart {
     __LOG_INFO << "I'm stopping...";
     
     done_ = true;
-    service_.stop();
+    
+    server_->stop();
   }
   //-----------------------------------------------------------------------------------------------
   void Daemon::on_config()
@@ -240,7 +238,7 @@ namespace wapstart {
     
     cfg_.reload();
     
-    service_.stop();
+    server_->stop();
   }
   //-----------------------------------------------------------------------------------------------
   void Daemon::on_expirate()

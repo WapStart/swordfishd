@@ -1,7 +1,7 @@
 import os
 
 env = Environment()
-env['CCFLAGS'] = '-g'
+env['CCFLAGS'] = '-O2'
 AddOption('--extrapath',
           dest='extrapath',
           type='string',

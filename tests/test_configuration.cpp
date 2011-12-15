@@ -9,11 +9,20 @@
 #include <cfg.hpp>
 //-------------------------------------------------------------------------------------------------
 const std::string _config_text = 
-"[general]\n \
+"[general]\n\
 ;\n\
 ;\n\
 ;\n\
-log_level = INFO\n";
+port=9696\n\
+workers=3\n\
+[logging]\n\
+log_level  = INFO\n\
+log_file   = on\n\
+log_syslog = off\n\
+log_stdout = off\n\
+log_file_path = swordfish.log\n\
+log_file_rot_size = 10\n\
+log_file_rot_freq = 12\n";
 //-------------------------------------------------------------------------------------------------
 BOOST_AUTO_TEST_SUITE(test_configuration)
 //-------------------------------------------------------------------------------------------------
@@ -29,7 +38,12 @@ BOOST_AUTO_TEST_CASE(test_parse)
 
   config.load(stream);
 
+  BOOST_REQUIRE(config.port() == 9696);
+  BOOST_REQUIRE(config.workers() == 3);
   BOOST_REQUIRE(config.log_level() == 6);
+  BOOST_REQUIRE(config.is_log_file());
+  BOOST_REQUIRE(!config.is_log_syslog());
+  BOOST_REQUIRE(!config.is_log_stdout());
 }
 //-------------------------------------------------------------------------------------------------
 BOOST_AUTO_TEST_CASE(test_file_not_found)
