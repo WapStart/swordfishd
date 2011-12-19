@@ -4,6 +4,7 @@
  */
 //-------------------------------------------------------------------------------------------------
 #include <iostream>
+#include "sys/stat.h"
 
 #include "daemon.hpp"
 #include "logger.hpp"
