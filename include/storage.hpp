@@ -8,7 +8,7 @@
 //-------------------------------------------------------------------------------------------------
 #include "boost/date_time/posix_time/posix_time.hpp"
 //-------------------------------------------------------------------------------------------------
-#include "hashmap.hpp"
+#include "dhashmap.hpp"
 #include "stats.hpp"
 #include "queue.hpp"
 #include "command.hpp"
@@ -25,7 +25,7 @@ namespace wapstart {
     typedef std::string key_type;
     typedef std::string val_type;
 
-    typedef Hashmap storage_type;
+    typedef DHashmap storage_type;
     typedef Queue   queue_type;
     typedef Stats   stats_type;
     typedef Command cmd_type;

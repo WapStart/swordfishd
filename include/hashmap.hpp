@@ -25,8 +25,11 @@ namespace wapstart {
      * val_type - when item added to storage
      */ 
     typedef std::string val_type;
-    typedef std::pair<val_type, time_type>  hashmap_val_type;
+    typedef std::pair<val_type, time_type>  hashmap_val_;
+    typedef hashmap_val_* hashmap_val_type;
     typedef std::pair<key_type, hashmap_val_type> item_type;
+    
+
     typedef boost::unordered_map<key_type, hashmap_val_type> hashmap_type;   
     /**
      *

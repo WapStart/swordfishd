@@ -27,7 +27,8 @@ namespace wapstart {
     //printf("[Stats::get] result: %s\n", result.c_str());
     __LOG_DEBUG << "[Stats::get] uptime " << boost::date_time::second_clock<time_type>::local_time() - start_time_ 
                << " storage size: " << storage_size_ << " deleted: " << deleted_ << " gets " << gets_ 
-               << " queue size: " << queue_size_; 
+               << " queue size: " << queue_size_
+               << " values: " << values_size_; 
     return true;
   }
 
@@ -44,7 +45,12 @@ namespace wapstart {
     write_scoped_lock lock(mutex_); 
     storage_size_ = size; 
   }
-
+//-------------------------------------------------------------------------------------------------
+  bool Stats::set_values_size(uint size)
+  {
+    write_scoped_lock lock(mutex_);
+    values_size_ = size; 
+  }
 //-------------------------------------------------------------------------------------------------
   bool Stats::set_deleted(uint count)
   {
@@ -75,5 +81,6 @@ namespace wapstart {
     deleted_      = 0;
     queue_size_   = 0;
     gets_         = 0;
+    values_size_  = 0;
   }
 }// namespace wapstart
