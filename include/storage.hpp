@@ -32,7 +32,7 @@ namespace wapstart {
     /**
      *
      */
-    Storage(uint ttl = 10, uint max_storage_size = 10);
+    Storage(uint ttl = 10, uint max_storage_size = 10, uint max_queue_size = 10);
     /**
      *
      */
@@ -60,8 +60,8 @@ namespace wapstart {
     storage_type storage_;
     queue_type   queue_;
     stats_type   stats_;
-    uint         max_storage_size_;
-    
+    uint         max_storage_size_; // in bytes
+    size_t       max_queue_size_;   // in bytes
   }; 
   //-----------------------------------------------------------------------------------------------
 } // namespace wapstart

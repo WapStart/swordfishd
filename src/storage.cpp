@@ -9,9 +9,10 @@
 #include "logger.hpp"
 //-------------------------------------------------------------------------------------------------
 namespace wapstart {
-  Storage::Storage(uint ttl, uint max_storage_size)
+  Storage::Storage(uint ttl, uint max_storage_size, uint max_queue_size)
     : storage_(storage_type::ttl_type(boost::posix_time::seconds(ttl))),
-      max_storage_size_(max_storage_size)
+      max_storage_size_(max_storage_size), max_queue_size_(max_queue_size)
+      //max_queue_size_(max_queue_size)
   {
   }
   //-----------------------------------------------------------------------------------------------
@@ -36,8 +37,9 @@ namespace wapstart {
 
   void Storage::add_item(const key_type& key, const val_type& val)
   {
-    while (storage_.get_storage_size() >= max_storage_size_)
+    while ( (storage_.get_storage_size_b() + key.length() + val.length())  >= max_storage_size_)
     {
+      __LOG_WARN << "[Storage::add_item] storage is full";
       expirate();
       refresh_stats();
       sleep(1);
@@ -72,7 +74,10 @@ namespace wapstart {
 
   void Storage::push_key(const key_type& key)
   {
-    stats_.set_queue_size(queue_.push(key));
+    if (queue_.size_b() + key.length() <= max_queue_size_)
+      stats_.set_queue_size(queue_.push(key));
+    else
+      __LOG_WARN << "[Storage::push_key] queue is full";
   }
 //-------------------------------------------------------------------------------------------------
 
@@ -106,7 +111,7 @@ namespace wapstart {
       if ( storage_.get(*x, value) )
         res_append(*x, value, res);
       else
-       queue_.push(*x); 
+       push_key(*x); 
     }
     refresh_stats();
     res += "END\r\n";

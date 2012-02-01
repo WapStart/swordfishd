@@ -10,7 +10,8 @@ namespace wapstart {
 //-------------------------------------------------------------------------------------------------
 
   Hashmap::Hashmap(const ttl_type& ttl)
-    : ttl_(ttl), deleted_(0), gets_(0) 
+    : ttl_(ttl), deleted_(0), gets_(0),
+      curr_storage_size_(0) 
   {
     
   }
@@ -26,6 +27,7 @@ namespace wapstart {
       time_type max_time = it->second.second + ttl_;
       if ( max_time < boost::date_time::second_clock<time_type>::local_time() )
       {
+        curr_storage_size_ -= it->first.length() + it->second.first.length();
         it = map_.erase(it);
         ++deleted_;
       }
@@ -73,7 +75,11 @@ namespace wapstart {
       __LOG_DEBUG << "[Hashmap::add] refresh ttl key " << key << " value " << val;
     }
     else
+    {
+      curr_storage_size_ += key.length() + val.length();
       __LOG_DEBUG << "[Hashmap::add] new item key " << key << " value " << val; 
+      return false;
+    }
     return true;
   }
 //-------------------------------------------------------------------------------------------------
@@ -82,6 +88,13 @@ namespace wapstart {
   {
     read_scoped_lock lock(mutex_);
     return map_.size(); 
+  }
+//-------------------------------------------------------------------------------------------------
+
+  size_t Hashmap::get_storage_size_b()
+  {
+    read_scoped_lock lock(mutex_);
+    return curr_storage_size_;
   }
 //-------------------------------------------------------------------------------------------------
 

@@ -10,6 +10,7 @@
 //-------------------------------------------------------------------------------------------------
 namespace wapstart {
   Queue::Queue()
+    : curr_size_(0)
   {
   
   }
@@ -20,6 +21,7 @@ namespace wapstart {
     if (std::find(queue_.begin(), queue_.end(), data) == queue_.end())
     {
       queue_.push_back(data);
+      curr_size_ += data.length();
       __LOG_DEBUG << "[Queue::push] add item:" << data;
     }
     else
@@ -51,12 +53,19 @@ namespace wapstart {
     }
     data = queue_.front();
     queue_.pop_front();
+    curr_size_ -= data.length();
   }
 
   uint Queue::size()
   {
     boost::mutex::scoped_lock lock(mutex_);
     return queue_.size();
+  }
+
+  uint Queue::size_b()
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    return curr_size_;
   }
 
 } // namespace wapstart 

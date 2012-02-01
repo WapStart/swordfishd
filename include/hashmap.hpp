@@ -42,9 +42,10 @@ namespace wapstart {
     /**
      * for stats
      */ 
-    uint get_storage_size(); 
-    uint get_deleted(); // set deleted_ = 0
-    uint get_gets();    // set gets_    = 0
+    uint   get_storage_size(); 
+    size_t get_storage_size_b();
+    uint   get_deleted(); // set deleted_ = 0
+    uint   get_gets();    // set gets_    = 0
   private:
     //-----------------------------------Mutexes-------------------------------------------
     //-------------------------------Read_scoped_lock--------------------------------------
@@ -90,8 +91,9 @@ namespace wapstart {
     /**
      * Hash data
      */  
-    ttl_type ttl_;
+    ttl_type      ttl_;
     hashmap_type  map_;
+    size_t        curr_storage_size_;
     /**
      * Synchronization
      */ 

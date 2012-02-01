@@ -56,9 +56,13 @@ namespace wapstart {
      */
     std::string filler() const;
     /**
-     *
+     * Storage size in bytes.
      */
     size_t storage_size() const;
+    /**
+     * Filler's queue size in bytes. 
+     */ 
+    size_t filler_queue_size() const;
     /**
      *  
      */
