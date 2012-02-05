@@ -15,6 +15,8 @@
 #include <boost/weak_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 //-------------------------------------------------------------------------------------------------
+#include <logger.hpp>
+//-------------------------------------------------------------------------------------------------
 namespace wapstart {
   class DHashmap {
   
@@ -38,7 +40,7 @@ namespace wapstart {
     typedef struct item item_t;
     typedef boost::weak_ptr<item_t> set_item_type;
     typedef boost::shared_ptr<item_t> map_item_type;
-    
+    typedef std::string key_type; 
     /*struct set_item
     {
       //mutable time_type ttl_;
@@ -91,7 +93,10 @@ namespace wapstart {
         std::size_t res = 0;
         if (map_item_type po = x.lock())
         {
-          res =  hash(po->value_);
+          if (__custom_hash__)
+            __custom_hash__(po->value_, res);
+          else
+            res = hash(po->value_);
         }
         else
         {
@@ -101,13 +106,36 @@ namespace wapstart {
         return res;
       }
     };
-  
+ 
+   struct normalized_hash
+      : std::unary_function<key_type, std::size_t>
+    {
+      std::size_t operator()(key_type const& x) const
+      {
+        boost::hash<val_type> hash;
+        std::size_t res = 0;
+        key_type normalized;
+        
+        if (__normalize_key__)
+            __normalize_key__(x, normalized);
+        else
+        {
+          normalized = x;
+          __LOG_DEBUG << "[normalized_hash] standard hash for key";
+        }
+        __LOG_DEBUG << "[normalized_hash] Key: " << normalized; 
+        res = hash(normalized);
+        
+        return res;
+      }
+    };
+ 
   
     typedef boost::unordered_set<set_item_type, dhm_hash, dhm_equal_to> set_type; 
   public:
     typedef DHashmap class_type;
     typedef boost::interprocess::interprocess_upgradable_mutex mutex_type;
-    typedef std::string key_type;
+    //typedef std::string key_type;
     /**
      * string - value
      * val_type - when item added to storage
@@ -115,7 +143,7 @@ namespace wapstart {
     //typedef std::pair<val_type, time_type>  hashmap_val_type;
     //typedef boost::shared_ptr<val_type> link_type;
     typedef std::pair<key_type, /*link_type*/ map_item_type> item_type;
-    typedef boost::unordered_map<key_type, /*link_type*/map_item_type> hashmap_type;   
+    typedef boost::unordered_map<key_type, /*link_type*/map_item_type, normalized_hash> hashmap_type;   
     /**
      *
      */
@@ -134,6 +162,8 @@ namespace wapstart {
     uint get_values_size(); 
     uint get_deleted(); // set deleted_ = 0
     uint get_gets();    // set gets_    = 0
+  
+    bool configure_func(const std::string&);
   private:
     //-----------------------------------Mutexes-------------------------------------------
     //-------------------------------Read_scoped_lock--------------------------------------
@@ -191,7 +221,20 @@ namespace wapstart {
      */ 
     uint deleted_;
     uint gets_;
+
+    bool configured_;
+
+    typedef void (*__custom_hash_type)(const std::string &value, size_t &hash);
+    typedef void (*__normalize_key_type)(const std::string &key,   std::string &normalized);
+    //static __custom_hash_type __custom_hash__;
+    //static __normalize_key_type __normalize_key__;
+
+    void               *lib_handle_;
+    //void       (*__custom_hash__)    (const std::string &value, size_t &hash);
+    static __custom_hash_type __custom_hash__;
+    static __normalize_key_type __normalize_key__;;
   };
+
   //-----------------------------------------------------------------------------------------------
 } // namespace wapstart
 //-------------------------------------------------------------------------------------------------

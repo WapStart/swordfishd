@@ -47,6 +47,8 @@ namespace wapstart {
     size_t queue_size();
     size_t max_storage_size() {return max_storage_size_;}; 
     size_t storage_size() {return storage_.get_storage_size();};
+  
+    bool   Configure(const std::string &lib_path) {return storage_.configure_func(lib_path);};
   private:
     
     Storage(const class_type &);

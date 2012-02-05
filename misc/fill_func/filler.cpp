@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <stdlib.h>
+#include <boost/functional/hash.hpp>
 bool get_values_from_outside(const std::vector<std::string> &keys,std::vector<std::string> &values)
 {
   std::vector<std::string>::const_iterator it_key = keys.begin();
@@ -33,4 +34,19 @@ bool get_values_from_outside(const std::vector<std::string> &keys,std::vector<st
      ++it_key;
   }
   return true;
+}
+
+void normalize_key(const std::string &key/*in*/, std::string &normalized_key/*out*/)
+{
+  normalized_key = key;
+  if (key.find("normalized") != std::string::npos)
+    normalized_key = "normalized";
+  std::cout << "key " << normalized_key << std::endl;
+  //prinf("key: %s\n", normalized_key.c_str());
+}
+
+void custom_hash(const std::string &value/*in*/, size_t &hash/*out*/)
+{
+  boost::hash<std::string> hash_res; 
+  hash = hash_res(value); 
 }

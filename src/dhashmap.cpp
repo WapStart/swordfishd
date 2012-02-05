@@ -5,17 +5,61 @@
 //-------------------------------------------------------------------------------------------------
 #include "dhashmap.hpp"
 #include "logger.hpp"
+#include "filler.h"
+
+#include <dlfcn.h> 
 //-------------------------------------------------------------------------------------------------
 namespace wapstart {
 //-------------------------------------------------------------------------------------------------
-
+  DHashmap::__custom_hash_type DHashmap::__custom_hash__      = NULL;
+  DHashmap::__normalize_key_type DHashmap::__normalize_key__  = NULL;
+  //----------------------------------------------------------------------------------------------- 
+  //__custom_hash_type __normalize_key__ = NULL;
+  //__normalize_key_type __normalize_key__ = NULL;
+  //DHashmap::__custom_hash__ = NULL;
+  //DHashmap::__normalize_key = NULL;
+  
   DHashmap::DHashmap(const ttl_type& ttl)
-    : ttl_(ttl), deleted_(0), gets_(0) 
+    : ttl_(ttl), deleted_(0), gets_(0),
+      lib_handle_(0), configured_(false)
+      //__custom_hash(0), __normalize_key(0) 
   {
     
   }
 //-------------------------------------------------------------------------------------------------
+  bool DHashmap::configure_func(const std::string& libpath)
+  {
+    if (libpath.empty())
+    {
+      __LOG_INFO << "Configured storage with default hash and empty notmalize funcs";
+      return configured_;
+    }
+    // загрузить библиотеку и инициализировать указатель на функцию
+    
+    if (!lib_handle_)
+      lib_handle_ = dlopen(libpath.c_str(), RTLD_LAZY);
+    if (!lib_handle_) 
+    {
+      __LOG_CRIT << "[DHashmap::Configure_func] Cannot load lib " << libpath << ". " << dlerror(); 
+      exit(1);
+    }
 
+    if (!__custom_hash__)
+      __custom_hash__  = (__custom_hash_type)(dlsym(lib_handle_, "custom_hash"));
+    
+    if (!__normalize_key__)
+      __normalize_key__ = (__normalize_key_type)(dlsym(lib_handle_, "normalize_key"));
+    
+    char * error;
+    if ((error = dlerror()) != NULL || !__normalize_key__ || !__custom_hash__)  
+    {
+      __LOG_CRIT << "[DHashmap::configure_func] Cannot load custom  func. " << error;
+      exit(1);
+    }
+    __LOG_DEBUG << "Filler function loaded";
+    configured_ = true;
+  }
+//-------------------------------------------------------------------------------------------------
   uint DHashmap::expirate()
   {
     write_scoped_lock lock(mutex_);
@@ -46,13 +90,20 @@ namespace wapstart {
     return deleted_;
   }
 //-------------------------------------------------------------------------------------------------
-  bool DHashmap::get(const key_type& key, val_type& val)
+  bool DHashmap::get(const key_type& _key, val_type& val)
   {
+    key_type key;
+    if (__normalize_key__)
+      __normalize_key__(_key, key);
+    else
+      key = _key;
     {
       write_scoped_lock lock(mutex_);
       ++gets_;
     }
     read_scoped_lock lock(mutex_);
+    __LOG_DEBUG << "[DHashmap::get] before find";
+
     hashmap_type::iterator it = keys_.find(key);
     if (it != keys_.end())
     {
@@ -74,7 +125,7 @@ namespace wapstart {
 
       return true;
     }
-    __LOG_DEBUG << "[Hashmap::get] missing get key " << key;
+    __LOG_DEBUG << "[DHashmap::get] missing get key " << key;
     return false;
   }
 //-------------------------------------------------------------------------------------------------

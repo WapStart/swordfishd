@@ -1,5 +1,3 @@
-#include "abstract_filler.hpp"
-#include <dlfcn.h>
 /** 
  * @file cfg.cpp
  * @author Litvinova Alina
@@ -9,6 +7,9 @@
 #include "boost/pointer_cast.hpp"
 #include <stdio.h>
 #include "logger.hpp"
+#include "abstract_filler.hpp"
+#include <dlfcn.h>
+
 //-------------------------------------------------------------------------------------------------
 
 namespace wapstart {

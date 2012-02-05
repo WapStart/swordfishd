@@ -11,4 +11,7 @@
 extern "C" bool get_values_from_outside(const std::vector<std::string> &keys,
                                    std::vector<std::string> &values);
 
+extern "C" void normalize_key(const std::string &key/*in*/, std::string &normalized_key/*out*/);
+
+extern "C" void custom_hash(const std::string &value/*in*/, size_t &hash/*out*/);
 #endif //__WAPSTART_SWORDFISH_FILLER_H__

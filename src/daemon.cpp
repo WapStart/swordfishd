@@ -180,6 +180,7 @@ namespace wapstart {
 
     __LOG_DEBUG << "I'm creating the storage...";
     storage_ = new Storage(cfg_.storage_ttl(), cfg_.storage_size());
+    storage_->Configure(cfg_.filler());
 
     __LOG_DEBUG << "I'm creating the filler...";
     filler_ = new AbstractFiller(storage_);
