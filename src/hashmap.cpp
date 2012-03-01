@@ -41,6 +41,7 @@ namespace wapstart {
 #include <stdio.h>
   bool Hashmap::get(const key_type& key, val_type& val)
   {
+    val = "";
     {
       write_scoped_lock lock(mutex_);
       ++gets_;
@@ -51,9 +52,14 @@ namespace wapstart {
     {
       val = it->second.first;
       __LOG_DEBUG << "[Hashmap::get] key " << key << " value " << val;
-      it->second.second = boost::date_time::second_clock<time_type>::local_time();
-      __LOG_DEBUG << "[Hashmap::add] refresh ttl key " << key << " value " << val;
-
+      
+      if(((it->second.second + ttl_) > boost::date_time::second_clock<time_type>::local_time() ))
+      {
+        it->second.second = boost::date_time::second_clock<time_type>::local_time();
+        __LOG_DEBUG << "[Hashmap::add] refresh ttl key " << key << " value " << val;
+      }
+      else
+        return false;
       return true;
     }
     __LOG_DEBUG << "[Hashmap::get] missing get key " << key;
@@ -64,6 +70,14 @@ namespace wapstart {
   bool Hashmap::add(const key_type& key, const val_type val)
   {
     write_scoped_lock lock(mutex_);
+    hashmap_type::iterator it  = map_.find(key);
+    if(it != map_.end())
+    {
+      it->second.first = val;
+      __LOG_DEBUG << "[Hashmap::add] update value for addled key " << key << " set value " << val;
+      it->second.second = boost::date_time::second_clock<time_type>::local_time();
+      return true;
+    }
     std::pair<hashmap_type::iterator, bool> res 
       = map_.insert(item_type(key, 
           hashmap_val_type(val, boost::date_time::second_clock<time_type>::local_time())));
@@ -71,8 +85,13 @@ namespace wapstart {
     {
       // такое уже есть, обновить значение и ttl
       res.first->second.first = val;
-      res.first->second.second = boost::date_time::second_clock<time_type>::local_time();
       __LOG_DEBUG << "[Hashmap::add] refresh ttl key " << key << " value " << val;
+      /*if((res.first->second.second + ttl_) >= boost::date_time::second_clock<time_type>::local_time())
+        __LOG_DEBUG << "[Hashmap::add] refresh ttl key " << key << " value " << val;
+      else
+        __LOG_DEBUG << "[Hashmap::add] update value for addled key " << key << " set value " << val;
+      */
+      res.first->second.second = boost::date_time::second_clock<time_type>::local_time();
     }
     else
     {

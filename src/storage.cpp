@@ -108,9 +108,10 @@ namespace wapstart {
     res = "";
     for(Command::arg_iterator x = cmd.arg_begin(); x != cmd.arg_end(); ++x) {
       std::string value;
-      if ( storage_.get(*x, value) )
+      bool result = storage_.get(*x, value);
+      if (!value.empty())
         res_append(*x, value, res);
-      else
+      if(!result)
        push_key(*x); 
     }
     refresh_stats();
