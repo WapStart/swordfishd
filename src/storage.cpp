@@ -106,9 +106,12 @@ namespace wapstart {
     key_type normalized_key;
     for(Command::arg_iterator x = cmd.arg_begin(); x != cmd.arg_end(); ++x) {
       std::string value;
-      if ( storage_.get(*x, value, normalized_key) )
+
+      bool result = storage_.get(*x, value, normalized_key);
+      if (!value.empty())
         res_append(*x, value, res);
-      else
+
+      if (!result)
        queue_.push(normalized_key); 
     }
     refresh_stats();
