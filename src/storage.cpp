@@ -103,12 +103,13 @@ namespace wapstart {
   bool Storage::get_val(const Command& cmd, result_type& res)
   {
     res = "";
+    key_type normalized_key;
     for(Command::arg_iterator x = cmd.arg_begin(); x != cmd.arg_end(); ++x) {
       std::string value;
-      if ( storage_.get(*x, value) )
+      if ( storage_.get(*x, value, normalized_key) )
         res_append(*x, value, res);
       else
-       queue_.push(*x); 
+       queue_.push(normalized_key); 
     }
     refresh_stats();
     res += "END\r\n";

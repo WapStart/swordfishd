@@ -90,22 +90,28 @@ namespace wapstart {
     return deleted_;
   }
 //-------------------------------------------------------------------------------------------------
-  bool DHashmap::get(const key_type& _key, val_type& val)
+  bool DHashmap::get(const key_type& _key, val_type& val, key_type& normalized_key)
   {
     key_type key;
     if (__normalize_key__)
       __normalize_key__(_key, key);
     else
       key = _key;
+    
+    normalized_key = key;
+    
     {
       write_scoped_lock lock(mutex_);
       ++gets_;
     }
     read_scoped_lock lock(mutex_);
-    __LOG_DEBUG << "[DHashmap::get] before find";
 
     hashmap_type::iterator it = keys_.find(key);
-    if (it != keys_.end())
+    if (  it != keys_.end()
+      &&  (boost::date_time::second_clock<time_type>::local_time() 
+            < ( it->second->ttl_ + ttl_)
+          )
+    )
     {
       val = it->second->value_;
     
@@ -113,7 +119,7 @@ namespace wapstart {
       set_item_type po = it->second; 
       set_type::iterator set_it = values_.find(po);//(set_item_type(*(it->second)));
       
-      if (set_it == values_.end())
+      if ((set_it == values_.end()))
       {
         __LOG_CRIT << "[DHashmap::get] value ref only in keys_!";
         abort();
@@ -121,11 +127,12 @@ namespace wapstart {
       //?!
       it->second->update_ttl();
       __LOG_DEBUG << "[DHashmap::get] key " << key << " value " << val;
-      __LOG_DEBUG << "[DHashmap::add] refresh ttl key " << key << " value " << val;
+      __LOG_DEBUG << "[DHashmap::get] refresh ttl key " << key << " value " << val;
 
       return true;
     }
     __LOG_DEBUG << "[DHashmap::get] missing get key " << key;
+    //expirate();
     return false;
   }
 //-------------------------------------------------------------------------------------------------
@@ -145,6 +152,7 @@ namespace wapstart {
         //все ок - объект есть, проапдейтить время, добавить ссылку в мапе
         found->update_ttl();
         keys_.insert(item_type(key, found));
+        __LOG_DEBUG << "[DHashmap::add] Added key for exists value";
       }
       else
       {
@@ -154,10 +162,25 @@ namespace wapstart {
     }
     else
     {
-      // значит надо создать строку в куче, добавить ее в множество, затем в мап
-      new_item->update_ttl();
-      values_.insert(new_item);
-      keys_.insert(item_type(key, new_item));
+      //значит, надо поискать в ключах, если такой ключик есть,
+      // то обновить только значение и ттл
+      hashmap_type::iterator it = keys_.find(key);
+      if (it != keys_.end())
+      {
+        __LOG_DEBUG << "[DHashmap::add] Update value and ttl for key " << key;
+        new_item->value_ = val;
+        new_item->update_ttl();
+        values_.insert(new_item);
+        it->second = new_item;
+      }
+      else
+      {
+        // иначе надо создать строку в куче, добавить ее в множество, затем в мап
+        new_item->update_ttl();
+        values_.insert(new_item);
+        keys_.insert(item_type(key, new_item));
+        __LOG_DEBUG << "[DHashmap::add] Add new key for exits value";
+      }
     }
     /*set_it = val_res.first;
     if (!val_res.second)

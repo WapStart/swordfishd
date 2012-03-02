@@ -2,21 +2,24 @@
 
 use IO::Socket;
 
-use constant REPETITIONS_NUMBER => 30000000;
- 
+use constant REPETITIONS_NUMBER => 500;
+use constant REPETITIONS_NUMBER2 => 400; 
 my $get_cmd  = "get key";
 
 my @chars = ('A', 'B', 'C', 'D', 'E', 'F');
 
 sub make_key {
   my $ret = "ttt";
-  for(my $x = 0; $x < 7; ++$x) {
+  for(my $x = 0; $x < 300; ++$x) {
     $ret .= $chars[rand 6];  
   }
   return $ret;
 }
 
 $key = make_key();
+
+for(my $y = 0; $y < REPETITIONS_NUMBER2; ++$y)
+{
 
 for(my $x = 0; $x < REPETITIONS_NUMBER; ++$x) {
  
@@ -43,4 +46,6 @@ for(my $x = 0; $x < REPETITIONS_NUMBER; ++$x) {
     
   #print $var, $var2, "\n"; 
   close($sock);
+}
+sleep(3);
 }
