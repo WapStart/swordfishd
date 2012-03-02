@@ -10,7 +10,7 @@ namespace wapstart {
 //-------------------------------------------------------------------------------------------------
 
   Hashmap::Hashmap(const ttl_type& ttl)
-    : ttl_(ttl), deleted_(0), gets_(0),
+    : ttl_(ttl), deleted_(0), gets_(0), updates_(0),
       curr_storage_size_(0) 
   {
     
@@ -74,8 +74,9 @@ namespace wapstart {
     if(it != map_.end())
     {
       it->second.first = val;
-      __LOG_DEBUG << "[Hashmap::add] update value for addled key " << key << " set value " << val;
+      __LOG_DEBUG << "[Hashmap::add] update value for added key " << key << " set value " << val;
       it->second.second = boost::date_time::second_clock<time_type>::local_time();
+      ++updates_;
       return true;
     }
     std::pair<hashmap_type::iterator, bool> res 
@@ -131,6 +132,15 @@ namespace wapstart {
     write_scoped_lock lock(mutex_);
     uint ret = gets_;
     gets_ = 0;
+    return ret;
+  }
+//-------------------------------------------------------------------------------------------------
+
+  uint Hashmap::get_updates()
+  {
+    write_scoped_lock lock(mutex_);
+    uint ret = updates_;
+    updates_ = 0;
     return ret;
   }
 //-------------------------------------------------------------------------------------------------

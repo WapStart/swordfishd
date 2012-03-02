@@ -16,18 +16,19 @@ namespace wapstart {
     read_scoped_lock lock(mutex_);
       
     ss << "STAT " << "uptime "   << boost::date_time::second_clock<time_type>::local_time() - start_time_   << "\r\n";
-    ss << "STAT " << "storage_size " << storage_size_ << "\r\n";
+    ss << "STAT " << "storage_size "  << storage_size_ << "\r\n";
     ss << "STAT " << "deleted "       << deleted_      << "\r\n";
-    ss << "STAT " << "gets_count "   << gets_         << "\r\n";
-    ss << "STAT " << "queue_size "   << queue_size_   << "\r\n";
+    ss << "STAT " << "gets_count "    << gets_         << "\r\n";
+    ss << "STAT " << "updates_count " << updates_      << "\r\n";
+    ss << "STAT " << "queue_size "    << queue_size_   << "\r\n";
     ss << "END\r\n";
     
     result = ss.str();
     
     //printf("[Stats::get] result: %s\n", result.c_str());
     __LOG_DEBUG << "[Stats::get] uptime " << boost::date_time::second_clock<time_type>::local_time() - start_time_ 
-               << " storage size: " << storage_size_ << " deleted: " << deleted_ << " gets " << gets_ 
-               << " queue size: " << queue_size_; 
+               << " storage size: " << storage_size_ << " deleted: " << deleted_ << " gets: " << gets_
+               << " updates: " << updates_ << " queue size: " << queue_size_;
     return true;
   }
 
@@ -66,6 +67,12 @@ namespace wapstart {
     gets_ += count;
   }
 
+  bool Stats::set_updates(uint count)
+  {
+    write_scoped_lock lock(mutex_);
+    updates_ += count;
+  }
+
 //-------------------------------------------------------------------------------------------------
   bool Stats::reset()
   {
@@ -75,5 +82,6 @@ namespace wapstart {
     deleted_      = 0;
     queue_size_   = 0;
     gets_         = 0;
+    updates_      = 0;
   }
 }// namespace wapstart

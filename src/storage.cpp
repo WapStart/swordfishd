@@ -93,7 +93,8 @@ namespace wapstart {
     stats_.set_storage_size(storage_.get_storage_size());
     stats_.set_deleted(storage_.get_deleted());
     stats_.set_queue_size(queue_.size());
-    stats_.set_gets(storage_.get_gets());   
+    stats_.set_gets(storage_.get_gets());
+    stats_.set_updates(storage_.get_updates());
   }
 //-------------------------------------------------------------------------------------------------
 

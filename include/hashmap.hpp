@@ -46,6 +46,7 @@ namespace wapstart {
     size_t get_storage_size_b();
     uint   get_deleted(); // set deleted_ = 0
     uint   get_gets();    // set gets_    = 0
+    uint   get_updates(); // set updates_ = 0
   private:
     //-----------------------------------Mutexes-------------------------------------------
     //-------------------------------Read_scoped_lock--------------------------------------
@@ -103,6 +104,7 @@ namespace wapstart {
      */ 
     uint deleted_;
     uint gets_;
+    uint updates_;
   };
   //-----------------------------------------------------------------------------------------------
 } // namespace wapstart
