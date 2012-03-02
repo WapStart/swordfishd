@@ -107,7 +107,11 @@ namespace wapstart {
     read_scoped_lock lock(mutex_);
 
     hashmap_type::iterator it = keys_.find(key);
-    if (it != keys_.end())
+    if (  it != keys_.end()
+      &&  (boost::date_time::second_clock<time_type>::local_time() 
+            < ( it->second->ttl_ + ttl_)
+          )
+    )
     {
       val = it->second->value_;
     
@@ -120,19 +124,12 @@ namespace wapstart {
         __LOG_CRIT << "[DHashmap::get] value ref only in keys_!";
         abort();
       }
+      //?!
+      it->second->update_ttl();
+      __LOG_DEBUG << "[DHashmap::get] key " << key << " value " << val;
+      __LOG_DEBUG << "[DHashmap::get] refresh ttl key " << key << " value " << val;
 
-      if (boost::date_time::second_clock<time_type>::local_time()
-            < ( it->second->ttl_ + ttl_)
-      )
-      {
-        //?!
-        it->second->update_ttl();
-        __LOG_DEBUG << "[DHashmap::get] key " << key << " value " << val;
-        __LOG_DEBUG << "[DHashmap::get] refresh ttl key " << key << " value " << val;
-
-        return true;
-      } else
-        return false;
+      return true;
     }
     __LOG_DEBUG << "[DHashmap::get] missing get key " << key;
     //expirate();
