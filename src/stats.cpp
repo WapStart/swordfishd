@@ -20,6 +20,7 @@ namespace wapstart {
     ss << "STAT " << "deleted "       << deleted_      << "\r\n";
     ss << "STAT " << "gets_count "   << gets_         << "\r\n";
     ss << "STAT " << "queue_size "   << queue_size_   << "\r\n";
+    ss << "STAT " << "values_size  "   << values_size_   << "\r\n";
     ss << "END\r\n";
     
     result = ss.str();
