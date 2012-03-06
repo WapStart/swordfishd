@@ -162,6 +162,7 @@ namespace wapstart {
     uint get_values_size(); 
     uint get_deleted(); // set deleted_ = 0
     uint get_gets();    // set gets_    = 0
+    uint get_updates(); // set updates_ = 0
   
     bool configure_func(const std::string&);
   private:
@@ -221,6 +222,7 @@ namespace wapstart {
      */ 
     uint deleted_;
     uint gets_;
+    uint updates_;
 
     bool configured_;
 

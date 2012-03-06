@@ -20,7 +20,7 @@ namespace wapstart {
   //DHashmap::__normalize_key = NULL;
   
   DHashmap::DHashmap(const ttl_type& ttl)
-    : ttl_(ttl), deleted_(0), gets_(0),
+    : ttl_(ttl), deleted_(0), gets_(0), updates_(0),
       lib_handle_(0), configured_(false)
       //__custom_hash(0), __normalize_key(0) 
   {
@@ -131,8 +131,17 @@ namespace wapstart {
         __LOG_DEBUG << "[DHashmap::get] refresh ttl key " << key << " value " << val;
 
         return true;
-      } else
+      } else {
+        __LOG_DEBUG << "[DHashmap::get] key " << key << " value " << val;
+        __LOG_DEBUG << "[DHashmap::get] update key " << key;
+
+        {
+          write_scoped_lock lock(mutex_);
+          ++updates_;
+        }
+
         return false;
+      }
     }
     __LOG_DEBUG << "[DHashmap::get] missing get key " << key;
     //expirate();
@@ -228,6 +237,15 @@ namespace wapstart {
     write_scoped_lock lock(mutex_);
     uint ret = gets_;
     gets_ = 0;
+    return ret;
+  }
+//-------------------------------------------------------------------------------------------------
+
+  uint DHashmap::get_updates()
+  {
+    write_scoped_lock lock(mutex_);
+    uint ret = updates_;
+    updates_ = 0;
     return ret;
   }
 //-------------------------------------------------------------------------------------------------

@@ -34,6 +34,7 @@ namespace wapstart {
     bool set_queue_size(uint size);
     bool set_gets(uint count); // gets_ += count
     bool set_values_size(uint size);
+    bool set_updates(uint count); // updates_ += count
 
     bool reset();
   private:
@@ -87,6 +88,7 @@ namespace wapstart {
     uint      queue_size_;
     uint      gets_;
     uint      values_size_;
+    uint      updates_;
     /**
      * Synchronization
      */ 
