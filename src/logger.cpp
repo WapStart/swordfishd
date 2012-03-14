@@ -94,6 +94,7 @@ namespace wapstart {
 
     privacy::syslog_backend->set_severity_mapper(
         sinks::syslog::direct_severity_mapping<int>("Severity"));
+
   }
   //-----------------------------------------------------------------------------------------------
   void logger_stdout_sink_init()
@@ -164,6 +165,8 @@ namespace wapstart {
                            << "] "
                            << formatters::message<char>()
         );
+
+      c->add_sink(privacy::syslog_sink);
     }
   }
   //-----------------------------------------------------------------------------------------------
