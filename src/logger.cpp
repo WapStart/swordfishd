@@ -164,6 +164,8 @@ namespace wapstart {
                            << "] "
                            << formatters::message<char>()
         );
+
+      c->add_sink(privacy::syslog_sink);
     }
   }
   //-----------------------------------------------------------------------------------------------
