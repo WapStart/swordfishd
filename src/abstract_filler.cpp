@@ -77,7 +77,7 @@ namespace wapstart {
       }
       if (keys.size() > 0)
       {
-        get_vals(keys, vals);
+        get_vals(keys, vals, config_);
         std::vector<std::string>::iterator key_it, val_it;
         key_it = keys.begin();
         val_it = vals.begin();

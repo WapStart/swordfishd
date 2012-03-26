@@ -22,7 +22,11 @@ namespace wapstart {
     typedef Storage                     storage_type;
     typedef boost::mutex                mutex_type;
 
-    typedef bool (*get_vals_type)(const std::vector<std::string>&, std::vector<std::string>&);
+    typedef bool (*get_vals_type)(
+        const std::vector<std::string>&,
+        std::vector<std::string>&,
+        boost::property_tree::ptree *config
+    );
     AbstractFiller(storage_type *storage, boost::property_tree::ptree *config):
         storage_(storage),
         config_(config),
