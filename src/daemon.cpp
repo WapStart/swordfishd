@@ -183,7 +183,7 @@ namespace wapstart {
     storage_->Configure(cfg_.filler());
 
     __LOG_DEBUG << "I'm creating the filler...";
-    filler_ = new AbstractFiller(storage_);
+    filler_ = new AbstractFiller(storage_, cfg_.get_config());
       
     __LOG_DEBUG << "I'm configuring the filler...";
     filler_->Configure(cfg_.filler(), cfg_.filler_function());

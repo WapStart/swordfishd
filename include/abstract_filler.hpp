@@ -9,6 +9,7 @@
 #include "storage.hpp"
 #include <boost/thread/mutex.hpp>
 #include <boost/function.hpp>
+#include <boost/property_tree/ptree.hpp>
 //-------------------------------------------------------------------------------------------------
 namespace wapstart {
 
@@ -20,9 +21,11 @@ namespace wapstart {
     typedef AbstractFiller              class_type;
     typedef Storage                     storage_type;
     typedef boost::mutex                mutex_type;
+
     typedef bool (*get_vals_type)(const std::vector<std::string>&, std::vector<std::string>&);
-    AbstractFiller(storage_type *storage):
+    AbstractFiller(storage_type *storage, boost::property_tree::ptree *config):
         storage_(storage),
+        config_(config),
         is_alive_(true),
         configured_(false) {};
     ~AbstractFiller();
@@ -47,11 +50,13 @@ namespace wapstart {
     std::string (*get_val)(std::string key);
     bool is_alive();
   
-    storage_type *storage_;
+    storage_type       *storage_;
     mutex_type          state_mutex_;
     bool                is_alive_;
     bool                configured_;
     void               *lib_handle_;
+
+    boost::property_tree::ptree *config_;
   };
   //-----------------------------------------------------------------------------------------------
 } // namespace wapstart
