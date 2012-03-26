@@ -40,7 +40,7 @@ namespace wapstart {
       __LOG_CRIT << "[AbstractFiller::Configure] Cannot load lib " << libpath << ". " << dlerror(); 
       exit(1);
     }
-    get_vals = (get_vals_type)(dlsym(lib_handle_, "get_values_from_outside"));
+    get_vals = (get_vals_type)(dlsym(lib_handle_, funcname.c_str()));
     char * error;
     if ((error = dlerror()) != NULL)  
     {

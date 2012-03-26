@@ -44,8 +44,7 @@ namespace wapstart {
   //-----------------------------------------------------------------------------------------------
   std::string Config::filler() const
   {
-    return tree_.get<std::string>("general.filler", 
-        "/home/alina/sf_repo/trunk/misc/fill_func/libfiller.so");
+    return tree_.get<std::string>("general.filler");
   }
   //-----------------------------------------------------------------------------------------------
   size_t Config::storage_size() const
