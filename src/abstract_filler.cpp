@@ -1,5 +1,5 @@
 /** 
- * @file cfg.cpp
+ * @file abstract_filler.cpp
  * @author Litvinova Alina
  */
 
