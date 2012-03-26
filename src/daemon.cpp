@@ -186,7 +186,7 @@ namespace wapstart {
     filler_ = new AbstractFiller(storage_);
       
     __LOG_DEBUG << "I'm configuring the filler...";
-    filler_->Configure(cfg_.filler());
+    filler_->Configure(cfg_.filler(), cfg_.filler_function());
 
     __LOG_DEBUG << "I'm creating the filler thread...";
     // Создаем поток наполнятора

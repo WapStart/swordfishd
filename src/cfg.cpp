@@ -47,6 +47,11 @@ namespace wapstart {
     return tree_.get<std::string>("general.filler");
   }
   //-----------------------------------------------------------------------------------------------
+  std::string Config::filler_function() const
+  {
+    return tree_.get<std::string>("general.filler_function", "get_values_from_outside");
+  }
+  //-----------------------------------------------------------------------------------------------
   size_t Config::storage_size() const
   {
     return tree_.get<size_t>("general.storage_size", 1000);

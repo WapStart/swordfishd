@@ -58,6 +58,10 @@ namespace wapstart {
     /**
      *
      */
+    std::string filler_function() const;
+    /**
+     *
+     */
     size_t storage_size() const;
     /**
      *  

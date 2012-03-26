@@ -31,8 +31,7 @@ namespace wapstart {
      */
     void operator()();
     void Shutdown();
-    bool Configure(const std::string  &libpath,
-                   const std::string  &func_name = "get_values_from_outside");
+    bool Configure(const std::string  &libpath, const std::string  &func_name);
 #ifndef __UNIT_TESTING_ON
   private:
 #endif // __UNIT_TESTING_ON
