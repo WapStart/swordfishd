@@ -21,7 +21,7 @@ namespace wapstart {
   
   DHashmap::DHashmap(const ttl_type& ttl)
     : ttl_(ttl), deleted_(0), gets_(0), updates_(0),
-      lib_handle_(0), configured_(false)
+      lib_handle_(0), configured_(false), storage_size(0)
       //__custom_hash(0), __normalize_key(0) 
   {
     
@@ -168,12 +168,17 @@ namespace wapstart {
       {
         //все ок - объект есть, проапдейтить время, добавить ссылку в мапе
         found->update_ttl();
-        keys_.insert(item_type(key, found));
+
+        // check that key inserted
+        if (keys_.insert(item_type(key, found)).second)
+          inc_storage_size(key.length());
+
         __LOG_DEBUG << "[DHashmap::add] Added key for exists value";
       }
       else
       {
         //delete from set
+        dec_storage_size(found->value_.length());
         values_.erase(found);
       }
     }
@@ -189,6 +194,7 @@ namespace wapstart {
         new_item->update_ttl();
         values_.insert(new_item);
         it->second = new_item;
+        inc_storage_size(new_item->value_.length());
       }
       else
       {
@@ -196,6 +202,7 @@ namespace wapstart {
         new_item->update_ttl();
         values_.insert(new_item);
         keys_.insert(item_type(key, new_item));
+        inc_storage_size(new_item->value_.length() + key.length());
         __LOG_DEBUG << "[DHashmap::add] Add new key for exits value";
       }
     }
@@ -217,7 +224,7 @@ namespace wapstart {
   uint DHashmap::get_storage_size()
   {
     read_scoped_lock lock(mutex_);
-    return keys_.size() + values_.size();
+    return storage_size;
   }
 //-------------------------------------------------------------------------------------------------
   uint DHashmap::get_keys_size()
@@ -259,4 +266,13 @@ namespace wapstart {
     return ret;
   }
 //-------------------------------------------------------------------------------------------------
+  void DHashmap::inc_storage_size(size_t size)
+  {
+    storage_size += size;
+  }
+//-------------------------------------------------------------------------------------------------
+  void DHashmap::dec_storage_size(size_t size)
+  {
+    storage_size -= size;
+  }
 }// namespace wapstart
