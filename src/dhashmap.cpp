@@ -70,6 +70,10 @@ namespace wapstart {
       time_type max_time = it->second->ttl_ + ttl_;
       if ( max_time < boost::date_time::second_clock<time_type>::local_time() )
       {
+        dec_storage_size(it->first.length());
+        if (it->second.use_count() == 1)
+           dec_storage_size(it->second->value_.length());
+
         it = keys_.erase(it);
         ++deleted_;
       }
@@ -87,10 +91,6 @@ namespace wapstart {
         ++set_it;
     }
     __LOG_DEBUG << "[DHashmap::expirate()] Deleted " << deleted_ << " items";
-
-	it = keys_.begin();
-	while (it != keys_.end())
-		__LOG_DEBUG << "Key " << it->first << " with value " << it->second->value_;
 
     return deleted_;
   }
