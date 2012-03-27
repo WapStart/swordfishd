@@ -80,7 +80,8 @@ namespace wapstart {
 
   void Storage::expirate()
   {
-    stats_.set_deleted(storage_.expirate(expirate_size_));
+    storage_.expirate(expirate_size_);
+    refresh_stats();
   }
 //-------------------------------------------------------------------------------------------------
 
