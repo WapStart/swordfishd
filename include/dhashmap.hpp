@@ -227,6 +227,8 @@ namespace wapstart {
 
     bool configured_;
 
+    size_t storage_size;
+
     typedef void (*__custom_hash_type)(const std::string &value, size_t &hash);
     typedef void (*__normalize_key_type)(const std::string &key,   std::string &normalized);
     //static __custom_hash_type __custom_hash__;
@@ -235,7 +237,10 @@ namespace wapstart {
     void               *lib_handle_;
     //void       (*__custom_hash__)    (const std::string &value, size_t &hash);
     static __custom_hash_type __custom_hash__;
-    static __normalize_key_type __normalize_key__;;
+    static __normalize_key_type __normalize_key__;
+
+    void inc_storage_size(size_t size);
+    void dec_storage_size(size_t size);
   };
 
   //-----------------------------------------------------------------------------------------------
