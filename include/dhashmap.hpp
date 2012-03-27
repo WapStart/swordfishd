@@ -159,6 +159,7 @@ namespace wapstart {
      * for stats
      */ 
     uint get_storage_size();
+    uint get_keys_size();
     uint get_values_size(); 
     uint get_deleted(); // set deleted_ = 0
     uint get_gets();    // set gets_    = 0

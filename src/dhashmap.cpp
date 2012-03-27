@@ -209,8 +209,13 @@ namespace wapstart {
     return true;
   }
 //-------------------------------------------------------------------------------------------------
-
   uint DHashmap::get_storage_size()
+  {
+    read_scoped_lock lock(mutex_);
+    return keys_.size() + values_.size();
+  }
+//-------------------------------------------------------------------------------------------------
+  uint DHashmap::get_keys_size()
   {
     read_scoped_lock lock(mutex_);
     return keys_.size(); 
