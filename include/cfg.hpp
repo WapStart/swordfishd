@@ -58,6 +58,10 @@ namespace wapstart {
     /**
      *
      */
+    std::string filler_function() const;
+    /**
+     *
+     */
     size_t storage_size() const;
     /**
      *  
@@ -83,6 +87,10 @@ namespace wapstart {
      *
      */
     std::string log_file_path() const;
+    /**
+     * 
+     */
+    boost::property_tree::ptree * get_config();
 #ifndef __UNIT_TESTING_ON
   private:
 #endif // __UNIT_TESTING_ON

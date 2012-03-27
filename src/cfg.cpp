@@ -44,8 +44,12 @@ namespace wapstart {
   //-----------------------------------------------------------------------------------------------
   std::string Config::filler() const
   {
-    return tree_.get<std::string>("general.filler", 
-        "/home/alina/sf_repo/trunk/misc/fill_func/libfiller.so");
+    return tree_.get<std::string>("general.filler");
+  }
+  //-----------------------------------------------------------------------------------------------
+  std::string Config::filler_function() const
+  {
+    return tree_.get<std::string>("general.filler_function", "get_values_from_outside");
   }
   //-----------------------------------------------------------------------------------------------
   size_t Config::storage_size() const
@@ -81,6 +85,11 @@ namespace wapstart {
   std::string Config::log_file_path() const 
   {
     return tree_.get<std::string>("logging.log_file_path", "swordfish.log");
+  }
+  //-----------------------------------------------------------------------------------------------
+  boost::property_tree::ptree * Config::get_config()
+  {
+    return &tree_;
   }
   //-----------------------------------------------------------------------------------------------
 } // namespace SU13

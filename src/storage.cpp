@@ -90,7 +90,8 @@ namespace wapstart {
     stats_.set_deleted(storage_.get_deleted());
     stats_.set_queue_size(queue_.size());
     stats_.set_gets(storage_.get_gets());  
-    stats_.set_values_size(storage_.get_values_size());   
+    stats_.set_values_size(storage_.get_values_size());
+    stats_.set_updates(storage_.get_updates());
   }
 //-------------------------------------------------------------------------------------------------
 
@@ -106,9 +107,12 @@ namespace wapstart {
     key_type normalized_key;
     for(Command::arg_iterator x = cmd.arg_begin(); x != cmd.arg_end(); ++x) {
       std::string value;
-      if ( storage_.get(*x, value, normalized_key) )
+
+      bool result = storage_.get(*x, value, normalized_key);
+      if (!value.empty())
         res_append(*x, value, res);
-      else
+
+      if (!result)
        queue_.push(normalized_key); 
     }
     refresh_stats();
