@@ -65,14 +65,17 @@ namespace wapstart {
     write_scoped_lock lock(mutex_);
     deleted_ = 0;
     hashmap_type::iterator it = keys_.begin();
-    while (it != keys_.end())
+
+    size_t deleted_bytes = 0;
+
+    while ((it != keys_.end()) && (deleted_bytes < expirate_size))
     {
       time_type max_time = it->second->ttl_ + ttl_;
       if ( max_time < boost::date_time::second_clock<time_type>::local_time() )
       {
-        dec_storage_size(it->first.length());
+        deleted_bytes += it->first.length();
         if (it->second.use_count() == 1)
-           dec_storage_size(it->second->value_.length());
+               deleted_bytes += it->second->value_.length();
 
         it = keys_.erase(it);
         ++deleted_;
@@ -80,6 +83,9 @@ namespace wapstart {
       else
         ++it;
     }
+
+    dec_storage_size(deleted_bytes);
+
     set_type::iterator set_it = values_.begin();
     while (set_it != values_.end())
     {
