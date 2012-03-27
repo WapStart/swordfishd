@@ -17,23 +17,27 @@ namespace wapstart {
   }
 //-------------------------------------------------------------------------------------------------
 
-  uint Hashmap::expirate()
+  uint Hashmap::expirate(size_t expirate_size)
   {
     write_scoped_lock lock(mutex_);
     deleted_ = 0;
     hashmap_type::iterator it = map_.begin();
-    while (it != map_.end())
+
+    size_t deleted_size = 0;
+    while ((it != map_.end()) && (deleted_size < expirate_size))
     {
       time_type max_time = it->second.second + ttl_;
       if ( max_time < boost::date_time::second_clock<time_type>::local_time() )
       {
-        curr_storage_size_ -= it->first.length() + it->second.first.length();
+        deleted_size += it->first.length() + it->second.first.length();
         it = map_.erase(it);
         ++deleted_;
       }
       else
         ++it;
     }
+    curr_storage_size_ -= deleted_size;
+
     __LOG_DEBUG << "[Hashmap::expirate()] Deleted " << deleted_ << " items";
     return deleted_;
   }

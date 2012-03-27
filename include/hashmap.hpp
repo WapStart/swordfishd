@@ -35,7 +35,7 @@ namespace wapstart {
     /**
      * return count of deleted items
      */
-    uint expirate(); // deleted += uint
+    uint expirate(size_t expirate_size); // deleted += uint
     bool get(const key_type&, val_type&); // ++gets_
     bool add(const key_type&, const val_type);
 

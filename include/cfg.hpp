@@ -66,6 +66,10 @@ namespace wapstart {
     /**
      *  
      */
+    size_t storage_expirate_size() const;
+    /**
+     *
+     */
     size_t storage_ttl() const;
     /** 
      *
