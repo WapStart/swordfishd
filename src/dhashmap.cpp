@@ -20,7 +20,7 @@ namespace wapstart {
   //DHashmap::__normalize_key = NULL;
   
   DHashmap::DHashmap(const ttl_type& ttl)
-    : ttl_(ttl), deleted_(0), gets_(0),
+    : ttl_(ttl), deleted_(0), gets_(0), updates_(0),
       lib_handle_(0), configured_(false)
       //__custom_hash(0), __normalize_key(0) 
   {
@@ -107,11 +107,7 @@ namespace wapstart {
     read_scoped_lock lock(mutex_);
 
     hashmap_type::iterator it = keys_.find(key);
-    if (  it != keys_.end()
-      &&  (boost::date_time::second_clock<time_type>::local_time() 
-            < ( it->second->ttl_ + ttl_)
-          )
-    )
+    if (it != keys_.end())
     {
       val = it->second->value_;
     
@@ -124,12 +120,28 @@ namespace wapstart {
         __LOG_CRIT << "[DHashmap::get] value ref only in keys_!";
         abort();
       }
-      //?!
-      it->second->update_ttl();
-      __LOG_DEBUG << "[DHashmap::get] key " << key << " value " << val;
-      __LOG_DEBUG << "[DHashmap::get] refresh ttl key " << key << " value " << val;
 
-      return true;
+      if (boost::date_time::second_clock<time_type>::local_time()
+            < ( it->second->ttl_ + ttl_)
+      )
+      {
+        //?!
+        it->second->update_ttl();
+        __LOG_DEBUG << "[DHashmap::get] key " << key << " value " << val;
+        __LOG_DEBUG << "[DHashmap::get] refresh ttl key " << key << " value " << val;
+
+        return true;
+      } else {
+        __LOG_DEBUG << "[DHashmap::get] key " << key << " value " << val;
+        __LOG_DEBUG << "[DHashmap::get] update key " << key;
+
+        {
+          write_scoped_lock lock(mutex_);
+          ++updates_;
+        }
+
+        return false;
+      }
     }
     __LOG_DEBUG << "[DHashmap::get] missing get key " << key;
     //expirate();
@@ -197,8 +209,13 @@ namespace wapstart {
     return true;
   }
 //-------------------------------------------------------------------------------------------------
-
   uint DHashmap::get_storage_size()
+  {
+    read_scoped_lock lock(mutex_);
+    return keys_.size() + values_.size();
+  }
+//-------------------------------------------------------------------------------------------------
+  uint DHashmap::get_keys_size()
   {
     read_scoped_lock lock(mutex_);
     return keys_.size(); 
@@ -225,6 +242,15 @@ namespace wapstart {
     write_scoped_lock lock(mutex_);
     uint ret = gets_;
     gets_ = 0;
+    return ret;
+  }
+//-------------------------------------------------------------------------------------------------
+
+  uint DHashmap::get_updates()
+  {
+    write_scoped_lock lock(mutex_);
+    uint ret = updates_;
+    updates_ = 0;
     return ret;
   }
 //-------------------------------------------------------------------------------------------------

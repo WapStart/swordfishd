@@ -9,6 +9,7 @@
 #include "storage.hpp"
 #include <boost/thread/mutex.hpp>
 #include <boost/function.hpp>
+#include <boost/property_tree/ptree.hpp>
 //-------------------------------------------------------------------------------------------------
 namespace wapstart {
 
@@ -20,21 +21,24 @@ namespace wapstart {
     typedef AbstractFiller              class_type;
     typedef Storage                     storage_type;
     typedef boost::mutex                mutex_type;
-    typedef bool (*get_vals_type)(const std::vector<std::string>&, std::vector<std::string>&);
-    AbstractFiller(storage_type *storage,
-                   const std::string  &libpath = "/home/alina/fill_func/libfiller.so",
-                   const std::string  &func_name = "get_values")
-      : storage_(storage),
+
+    typedef bool (*get_vals_type)(
+        const std::vector<std::string>&,
+        std::vector<std::string>&,
+        boost::property_tree::ptree *config
+    );
+    AbstractFiller(storage_type *storage, boost::property_tree::ptree *config):
+        storage_(storage),
+        config_(config),
         is_alive_(true),
-        configured_(false){};
+        configured_(false) {};
     ~AbstractFiller();
     /**
      * @param storage.
      */
     void operator()();
     void Shutdown();
-    bool Configure(const std::string  &libpath = "/home/alina/sf_repo/trunk/misc/fill_func/libfiller.so",
-                   const std::string  &func_name = "get_values");
+    bool Configure(const std::string  &libpath, const std::string  &func_name);
 #ifndef __UNIT_TESTING_ON
   private:
 #endif // __UNIT_TESTING_ON
@@ -50,11 +54,13 @@ namespace wapstart {
     std::string (*get_val)(std::string key);
     bool is_alive();
   
-    storage_type *storage_;
+    storage_type       *storage_;
     mutex_type          state_mutex_;
     bool                is_alive_;
     bool                configured_;
     void               *lib_handle_;
+
+    boost::property_tree::ptree *config_;
   };
   //-----------------------------------------------------------------------------------------------
 } // namespace wapstart

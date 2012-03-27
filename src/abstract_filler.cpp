@@ -40,7 +40,7 @@ namespace wapstart {
       __LOG_CRIT << "[AbstractFiller::Configure] Cannot load lib " << libpath << ". " << dlerror(); 
       exit(1);
     }
-    get_vals = (get_vals_type)(dlsym(lib_handle_, "get_values_from_outside"));
+    get_vals = (get_vals_type)(dlsym(lib_handle_, funcname.c_str()));
     char * error;
     if ((error = dlerror()) != NULL)  
     {
@@ -77,7 +77,7 @@ namespace wapstart {
       }
       if (keys.size() > 0)
       {
-        get_vals(keys, vals);
+        get_vals(keys, vals, config_);
         std::vector<std::string>::iterator key_it, val_it;
         key_it = keys.begin();
         val_it = vals.begin();
