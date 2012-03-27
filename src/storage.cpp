@@ -9,9 +9,10 @@
 #include "logger.hpp"
 //-------------------------------------------------------------------------------------------------
 namespace wapstart {
-  Storage::Storage(uint ttl, uint max_storage_size)
+  Storage::Storage(size_t ttl, size_t max_storage_size, size_t expirate_size)
     : storage_(storage_type::ttl_type(boost::posix_time::seconds(ttl))),
-      max_storage_size_(max_storage_size)
+      max_storage_size_(max_storage_size),
+      expirate_size_(expirate_size)
   {
   }
   //-----------------------------------------------------------------------------------------------
@@ -79,7 +80,7 @@ namespace wapstart {
 
   void Storage::expirate()
   {
-    stats_.set_deleted(storage_.expirate());
+    stats_.set_deleted(storage_.expirate(expirate_size_));
   }
 //-------------------------------------------------------------------------------------------------
 

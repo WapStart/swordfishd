@@ -57,6 +57,11 @@ namespace wapstart {
     return tree_.get<size_t>("general.storage_size", 1000);
   }
   //-----------------------------------------------------------------------------------------------
+  size_t Config::storage_expirate_size() const
+  {
+    return tree_.get<size_t>("general.storage_expirate_size", storage_size() >> 3);
+  }
+  //-----------------------------------------------------------------------------------------------
   size_t Config::storage_ttl() const
   {
     return tree_.get<size_t>("general.storage_ttl", 10);
