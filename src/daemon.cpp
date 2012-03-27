@@ -179,7 +179,11 @@ namespace wapstart {
     reset_server();
 
     __LOG_DEBUG << "I'm creating the storage...";
-    storage_ = new Storage(cfg_.storage_ttl(), cfg_.storage_size());
+    storage_ = new Storage(
+      cfg_.storage_ttl(),
+      cfg_.storage_size(),
+      cfg_.storage_expirate_size()
+    );
     storage_->Configure(cfg_.filler());
 
     __LOG_DEBUG << "I'm creating the filler...";

@@ -60,7 +60,7 @@ namespace wapstart {
     configured_ = true;
   }
 //-------------------------------------------------------------------------------------------------
-  uint DHashmap::expirate()
+  uint DHashmap::expirate(size_t expirate_size)
   {
     write_scoped_lock lock(mutex_);
     deleted_ = 0;
@@ -87,6 +87,11 @@ namespace wapstart {
         ++set_it;
     }
     __LOG_DEBUG << "[DHashmap::expirate()] Deleted " << deleted_ << " items";
+
+	it = keys_.begin();
+	while (it != keys_.end())
+		__LOG_DEBUG << "Key " << it->first << " with value " << it->second->value_;
+
     return deleted_;
   }
 //-------------------------------------------------------------------------------------------------
