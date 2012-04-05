@@ -1,0 +1,16 @@
+Import('env')
+
+test_env = env.Clone()
+
+test_env.Append(CPPPATH=['../include'])
+test_env.Append(CPPFLAGS='-D__UNIT_TESTING_ON')
+
+test_framework = test_env.FindFile('libboost_unit_test_framework.a', env['LIBPATH'])
+
+cfg_o = test_env.Object('test_cfg.o', '../src/cfg.cpp')
+command_tokenizer_o = test_env.Object('command_tokenizer.o', '../src/command_tokenizer.cpp')
+
+if(test_framework):
+  test_env.Program('test_swordfish', [Glob('*.cpp'), cfg_o, command_tokenizer_o, test_framework])
+else:
+  print 'scons: failed to find the boost unit test framework!'
