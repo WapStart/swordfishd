@@ -1,3 +1,9 @@
+wapstart-swordfish (0.0.3) unstable; urgency=low
+
+  * storage_expirate_size implemented
+
+ -- dovg <dovg@ruby.oemdesign.local>  Thu, 05 Apr 2012 13:20:23 +0400
+
 wapstart-swordfish (0.0.2) unstable; urgency=low
 
   * DEBIAN/changelog

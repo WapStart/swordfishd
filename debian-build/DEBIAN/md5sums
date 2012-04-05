@@ -1,4 +1,4 @@
-6d6983cdbf75ddc1c89a523efbb62253  /home/dovg/daemon/wapstart-swordfish/etc/swordfish/config.example.ini
-8132cdcd36621c0bfa597d82b37aa0e8  /home/dovg/daemon/wapstart-swordfish/etc/init.d/swordfish-testfiller.sh
-deed2bd920027ad8429ea2560198b54e  /home/dovg/daemon/wapstart-swordfish/usr/lib/swordfish/testfiller.so
-8d3688d8e65023310e1b523c207cd293  /home/dovg/daemon/wapstart-swordfish/usr/sbin/swordfish
+daa159bc2a6ce3f47655fd807234559a  /home/dovg/daemon/daemon-src/debian-build/etc/swordfish/config.example.ini
+8132cdcd36621c0bfa597d82b37aa0e8  /home/dovg/daemon/daemon-src/debian-build/etc/init.d/swordfish-testfiller.sh
+deed2bd920027ad8429ea2560198b54e  /home/dovg/daemon/daemon-src/debian-build/usr/lib/swordfish/testfiller.so
+63aca72c967dba75402cd35bea01c56f  /home/dovg/daemon/daemon-src/debian-build/usr/sbin/swordfish
