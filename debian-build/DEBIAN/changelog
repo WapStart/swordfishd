@@ -1,3 +1,9 @@
+wapstart-swordfish (0.0.4) unstable; urgency=low
+
+  * don't recalculate statistic everytime
+
+ -- dovg <dovg@ruby.oemdesign.local>  Tue, 17 Apr 2012 13:53:17 +0400
+
 wapstart-swordfish (0.0.3) unstable; urgency=low
 
   * storage_expirate_size implemented
