@@ -41,11 +41,9 @@ namespace wapstart {
     {
       __LOG_WARN << "[Storage::add_item] storage is full";
       expirate();
-      refresh_stats();
       sleep(1);
     }
     storage_.add(key, val); 
-    refresh_stats();
   }
 //-------------------------------------------------------------------------------------------------
 
@@ -84,7 +82,6 @@ namespace wapstart {
   void Storage::expirate()
   {
     storage_.expirate(expirate_size_);
-    refresh_stats();
   }
 //-------------------------------------------------------------------------------------------------
 
@@ -101,6 +98,7 @@ namespace wapstart {
 
   void Storage::get_stats(result_type& res)
   {
+    refresh_stats();
     stats_.get(res);  
   }
 //-------------------------------------------------------------------------------------------------
@@ -116,7 +114,6 @@ namespace wapstart {
       if(!result)
        push_key(*x); 
     }
-    refresh_stats();
     res += "END\r\n";
     //printf("res: %s", res.c_str());
     return true;
