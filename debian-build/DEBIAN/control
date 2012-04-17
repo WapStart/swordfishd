@@ -1,0 +1,12 @@
+Package: wapstart-swordfish
+Version: 0.0.3
+Maintainer: Evgeny Kokovikhin <ek@co.wapstart.ru>
+Architecture: amd64
+Section: misc
+Priority: optional
+Description: swordfish daemon
+ look like memcache but is not int
+ .
+ Author was too lazy to add a description
+Depends: libboost-log1.42.0, libboost-program-options1.42.0, libboost-system1.42.0, libboost-thread1.42.0
+

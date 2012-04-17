@@ -38,7 +38,7 @@ namespace wapstart {
     }
     curr_storage_size_ -= deleted_size;
 
-    __LOG_DEBUG << "[Hashmap::expirate()] Deleted " << deleted_ << " items";
+    __LOG_INFO << "[Hashmap::expirate()] Deleted " << deleted_ << " items";
     return deleted_;
   }
 //-------------------------------------------------------------------------------------------------
