@@ -1,5 +1,5 @@
 Package: wapstart-swordfish
-Version: 0.0.4
+Version: 0.0.5
 Maintainer: Evgeny Kokovikhin <ek@co.wapstart.ru>
 Architecture: amd64
 Section: misc
