@@ -40,11 +40,9 @@ namespace wapstart {
     while (storage_.get_storage_size() >= max_storage_size_)
     {
       expirate();
-      refresh_stats();
       sleep(1);
     }
     storage_.add(key, val); 
-    refresh_stats();
   }
 //-------------------------------------------------------------------------------------------------
 
@@ -81,7 +79,6 @@ namespace wapstart {
   void Storage::expirate()
   {
     storage_.expirate(expirate_size_);
-    refresh_stats();
   }
 //-------------------------------------------------------------------------------------------------
 
@@ -99,6 +96,7 @@ namespace wapstart {
 
   void Storage::get_stats(result_type& res)
   {
+    refresh_stats();
     stats_.get(res);  
   }
 //-------------------------------------------------------------------------------------------------
@@ -117,7 +115,6 @@ namespace wapstart {
       if (!result)
        queue_.push(normalized_key); 
     }
-    refresh_stats();
     res += "END\r\n";
     //printf("res: %s", res.c_str());
     return true;
