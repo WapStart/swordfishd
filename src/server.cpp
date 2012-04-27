@@ -33,9 +33,12 @@ namespace wapstart {
     if(!error) {
       worker_->run();
       worker_ = Worker::create(service_, storage_);
-      acceptor_.async_accept(worker_->socket(), boost::bind(
-        &Server::on_accept, this, boost::asio::placeholders::error)); 
+    } else {
+	//look like error
+	//do nothing
     }
+      acceptor_.async_accept(worker_->socket(), boost::bind(
+        &Server::on_accept, this, boost::asio::placeholders::error));
   }
   //-----------------------------------------------------------------------------------------------
   void Server::run()
