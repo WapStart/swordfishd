@@ -12,6 +12,9 @@
 #include "storage.hpp"
 #include "abstract_filler.hpp"
 //-------------------------------------------------------------------------------------------------
+
+#define WAPSTART_SWORDFISH_SLEEP_ON_ERROR_MS 500
+
 namespace wapstart {
   class Server {
   public:
