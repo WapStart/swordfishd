@@ -8,6 +8,7 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 //-------------------------------------------------------------------------------------------------
 #include "server.hpp"
+#include "logger.hpp"
 //-------------------------------------------------------------------------------------------------
 namespace wapstart {
   Server::Server(service_type &service,
@@ -34,8 +35,12 @@ namespace wapstart {
       worker_->run();
       worker_ = Worker::create(service_, storage_);
     } else {
-	//look like error
-	//do nothing
+        __LOG_CRIT << "can't accept new request. Sleeping a bit";
+        __LOG_CRIT << "acceptor said: " <<  error.message();
+        
+        boost::this_thread::sleep(
+            boost::posix_time::milliseconds(WAPSTART_SWORDFISH_SLEEP_ON_ERROR_MS)
+        );
     }
       acceptor_.async_accept(worker_->socket(), boost::bind(
         &Server::on_accept, this, boost::asio::placeholders::error));
