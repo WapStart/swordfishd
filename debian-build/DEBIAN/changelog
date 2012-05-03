@@ -1,3 +1,9 @@
+wapstart-swordfish (0.0.6) unstable; urgency=low
+
+  * logging for nonacceptable connections
+
+ -- dovg <dovg@ruby.oemdesign.local>  Thu, 03 May 2012 14:26:46 +0400
+
 wapstart-swordfish (0.0.5) unstable; urgency=low
 
   * fix problem with ulimits: always open a new connection

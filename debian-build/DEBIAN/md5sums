@@ -1,4 +1,4 @@
 daa159bc2a6ce3f47655fd807234559a  /home/dovg/daemon/daemon-src/debian-build/etc/swordfish/config.example.ini
 8132cdcd36621c0bfa597d82b37aa0e8  /home/dovg/daemon/daemon-src/debian-build/etc/init.d/swordfish-testfiller.sh
 deed2bd920027ad8429ea2560198b54e  /home/dovg/daemon/daemon-src/debian-build/usr/lib/swordfish/testfiller.so
-d0e3cfb16019b42854def8601e381b00  /home/dovg/daemon/daemon-src/debian-build/usr/sbin/swordfish
+59f9571a5575f88620332250dd550563  /home/dovg/daemon/daemon-src/debian-build/usr/sbin/swordfish
