@@ -7,22 +7,19 @@
 #include "logger.hpp"
 #include "filler.h"
 
-#include <dlfcn.h> 
+#include <dlfcn.h>
+
+#include <iostream>
 //-------------------------------------------------------------------------------------------------
 namespace wapstart {
 //-------------------------------------------------------------------------------------------------
   DHashmap::__custom_hash_type DHashmap::__custom_hash__      = NULL;
   DHashmap::__normalize_key_type DHashmap::__normalize_key__  = NULL;
   //----------------------------------------------------------------------------------------------- 
-  //__custom_hash_type __normalize_key__ = NULL;
-  //__normalize_key_type __normalize_key__ = NULL;
-  //DHashmap::__custom_hash__ = NULL;
-  //DHashmap::__normalize_key = NULL;
   
   DHashmap::DHashmap(const ttl_type& ttl)
     : ttl_(ttl), deleted_(0), gets_(0), updates_(0),
       lib_handle_(0), configured_(false), storage_size(0)
-      //__custom_hash(0), __normalize_key(0) 
   {
     
   }
@@ -63,24 +60,22 @@ namespace wapstart {
   uint DHashmap::expirate(size_t expirate_size)
   {
     write_scoped_lock lock(mutex_);
-    deleted_ = 0;
-    hashmap_type::iterator it = keys_.begin();
+
+    hashmap_set_by_ttl::iterator it = keys_.get<hashmap_ttl_tag>().begin();
+    hashmap_set_by_ttl::iterator end_it = keys_.get<hashmap_ttl_tag>().end();
 
     size_t deleted_bytes = 0;
 
-    while ((it != keys_.end()) && (deleted_bytes < expirate_size))
+    while ((it != end_it) && (deleted_bytes < expirate_size))
     {
-      time_type max_time = it->second->ttl_ + ttl_;
-      if ( max_time < boost::date_time::second_clock<time_type>::local_time() )
-      {
-        deleted_bytes += it->first.length();
-        if (it->second.use_count() == 1)
-               deleted_bytes += it->second->value_.length();
+        deleted_bytes += it->key_.length();
 
-        it = keys_.erase(it);
+        if (it->value_.use_count() == 1)
+               deleted_bytes += it->value_->length();
+
+        keys_.get<hashmap_ttl_tag>().erase(it);
         ++deleted_;
-      }
-      else
+
         ++it;
     }
 
@@ -110,34 +105,33 @@ namespace wapstart {
       key = _key;
     
     normalized_key = key;
-    
+
     {
       write_scoped_lock lock(mutex_);
       ++gets_;
     }
     read_scoped_lock lock(mutex_);
 
-    hashmap_type::iterator it = keys_.find(key);
-    if (it != keys_.end())
+    hashmap_set_by_key::iterator it = keys_.get<hashmap_key_tag>().find(key);
+    hashmap_set_by_key::iterator end_it = keys_.get<hashmap_key_tag>().end();
+
+    if (it != end_it)
     {
-      val = it->second->value_;
-    
-      //?!
-      set_item_type po = it->second; 
-      set_type::iterator set_it = values_.find(po);//(set_item_type(*(it->second)));
+/*       set_type::iterator set_it = values_.find();//(set_item_type(*(it->second)));
       
       if ((set_it == values_.end()))
       {
         __LOG_CRIT << "[DHashmap::get] value ref only in keys_!";
         abort();
       }
+*/
+      val = *it->value_;
 
       if (boost::date_time::second_clock<time_type>::local_time()
-            < ( it->second->ttl_ + ttl_)
+            < ( it->ttl_ + ttl_)
       )
       {
-        //?!
-        it->second->update_ttl();
+        it->update_ttl();
         __LOG_DEBUG << "[DHashmap::get] key " << key << " value " << val;
         __LOG_DEBUG << "[DHashmap::get] refresh ttl key " << key << " value " << val;
 
@@ -155,7 +149,7 @@ namespace wapstart {
       }
     }
     __LOG_DEBUG << "[DHashmap::get] missing get key " << key;
-    //expirate();
+
     return false;
   }
 //-------------------------------------------------------------------------------------------------
@@ -165,65 +159,72 @@ namespace wapstart {
     write_scoped_lock lock(mutex_);
     
     set_type::iterator set_it;
-    boost::shared_ptr<item_t> new_item(new item_t(val)); 
+    map_item_type new_item(new item_t(val));
     set_type::iterator in_set  = values_.find(new_item);
+
     if (in_set != values_.end())
     {
       // значит такое уже есть в памяти, создать надо пару ключ-ссылка
       if(map_item_type found = in_set->lock())
       {
-        //все ок - объект есть, проапдейтить время, добавить ссылку в мапе
-        found->update_ttl();
+        //все ок - объект есть
+        // проверяем есть ли такой ключ
+        hashmap_set_by_key::iterator it = keys_.get<hashmap_key_tag>().find(key);
+        hashmap_set_by_key::iterator end_it = keys_.get<hashmap_key_tag>().end();
 
-        // check that key inserted
-        if (keys_.insert(item_type(key, found)).second)
+        if (it != end_it) {
+           if (it->value_ != found) {
+             if (it->value_.use_count() == 1) {
+               dec_storage_size(it->value_->length());
+               values_.erase(it->value_);
+             }
+
+             keys_.get<hashmap_key_tag>().erase(it);
+             keys_.insert(key_type_struct(key, found));
+
+              __LOG_DEBUG << "[DHashmap::add] Update value for existing key";
+           } else {
+             __LOG_DEBUG << "[DHashmap::add] No changes";
+           }
+        } else {
+          keys_.insert(key_type_struct(key, found));
           inc_storage_size(key.length());
 
-        __LOG_DEBUG << "[DHashmap::add] Added key for exists value";
+          __LOG_DEBUG << "[DHashmap::add] Added key for exists value";
+        }
       }
       else
       {
         //delete from set
-        dec_storage_size(found->value_.length());
+        dec_storage_size(found->length());
         values_.erase(found);
+
+        __LOG_DEBUG << "[DHashmap::add] Delete value from set";
       }
     }
     else
     {
       //значит, надо поискать в ключах, если такой ключик есть,
       // то обновить только значение и ттл
-      hashmap_type::iterator it = keys_.find(key);
-      if (it != keys_.end())
+      hashmap_set_by_key::iterator it = keys_.get<hashmap_key_tag>().find(key);
+      hashmap_set_by_key::iterator end_it = keys_.get<hashmap_key_tag>().end();
+      if (it != end_it)
       {
         __LOG_DEBUG << "[DHashmap::add] Update value and ttl for key " << key;
-        new_item->value_ = val;
-        new_item->update_ttl();
+        it->update_ttl();
         values_.insert(new_item);
-        it->second = new_item;
-        inc_storage_size(new_item->value_.length());
+        inc_storage_size(new_item->length());
       }
       else
       {
         // иначе надо создать строку в куче, добавить ее в множество, затем в мап
-        new_item->update_ttl();
         values_.insert(new_item);
-        keys_.insert(item_type(key, new_item));
-        inc_storage_size(new_item->value_.length() + key.length());
+        keys_.insert(key_type_struct(key, new_item));
+        inc_storage_size(new_item->length() + key.length());
         __LOG_DEBUG << "[DHashmap::add] Add new key for exits value";
       }
     }
-    /*set_it = val_res.first;
-    if (!val_res.second)
-      set_it->update_ttl();
-    
-    std::pair<hashmap_type::iterator, bool> res 
-      = keys_.insert(item_type(key, set_it->val_ptr_));
-    if (!val_res.second)
-    {
-      __LOG_DEBUG << "key already in storage"; 
-    }
-    __LOG_DEBUG << "[DHashmap::add] new item key " << key << " value " << val; 
-    */
+
     return true;
   }
 //-------------------------------------------------------------------------------------------------

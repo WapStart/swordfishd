@@ -10,6 +10,11 @@
 #include "boost/unordered_map.hpp"
 #include "boost/unordered_set.hpp"
 //-------------------------------------------------------------------------------------------------
+#include "boost/multi_index_container.hpp"
+#include "boost/multi_index/hashed_index.hpp"
+#include "boost/multi_index/ordered_index.hpp"
+#include "boost/multi_index/member.hpp"
+//-------------------------------------------------------------------------------------------------
 #include <boost/interprocess/sync/interprocess_upgradable_mutex.hpp>
 //-------------------------------------------------------------------------------------------------
 #include <boost/weak_ptr.hpp>
@@ -26,43 +31,27 @@ namespace wapstart {
     typedef boost::posix_time::ptime time_type;
     typedef boost::posix_time::time_duration ttl_type;
 
-    struct item
-    {
-      val_type  value_;
-      mutable time_type   ttl_;
-      item(const val_type& value):value_(value){;};
-      bool operator==(const item& rhs){return value_ == rhs.value_;};
-      void update_ttl() const 
-      {
-        ttl_ = boost::date_time::second_clock<time_type>::local_time();
-      }
-    };
-    typedef struct item item_t;
+	typedef std::string key_type;
+    typedef std::string item_t;
     typedef boost::weak_ptr<item_t> set_item_type;
     typedef boost::shared_ptr<item_t> map_item_type;
-    typedef std::string key_type; 
-    /*struct set_item
-    {
-      //mutable time_type ttl_;
-      //boost::shared_ptr<val_type> val_ptr_;
-      mutable boost::shared_ptr<item_type> val_ptr_;
 
-      set_item(boost::shared_ptr<item_type> const& ptr)
+    typedef struct key_type_struct {
+      key_type key_;
+      mutable time_type ttl_;
+      map_item_type value_;
+
+      key_type_struct(const key_type &key, const map_item_type &value)
+        : key_(key), value_(value)
       {
-        val_ptr_ = ptr;
-        val_ptr_->ttl_(boost::date_time::second_clock<time_type>::local_time()){;};
-      
-      set_item(const val_type& val)
-        : val_ptr_(new val_type(val)),
-          ttl_(boost::date_time::second_clock<time_type>::local_time()){;};
+        update_ttl();
+      }
+
       void update_ttl() const
       {
         ttl_ = boost::date_time::second_clock<time_type>::local_time();
-      };
-    };
-
-    typedef set_item set_item_type;
-    */
+      }
+    } KeyType;
 
     struct dhm_equal_to // double hash map
       : std::binary_function<set_item_type, set_item_type, bool>
@@ -74,7 +63,7 @@ namespace wapstart {
         map_item_type poy = y.lock();
         if (pox && poy) 
         {     
-          return (pox->value_ == poy->value_); // Вызываем метод объекта
+          return (*pox == *poy);
         } 
         else 
         {
@@ -94,9 +83,9 @@ namespace wapstart {
         if (map_item_type po = x.lock())
         {
           if (__custom_hash__)
-            __custom_hash__(po->value_, res);
+            __custom_hash__(*po, res);
           else
-            res = hash(po->value_);
+            res = hash(*po);
         }
         else
         {
@@ -129,21 +118,34 @@ namespace wapstart {
         return res;
       }
     };
- 
   
-    typedef boost::unordered_set<set_item_type, dhm_hash, dhm_equal_to> set_type; 
+    typedef boost::unordered_set<set_item_type, dhm_hash, dhm_equal_to> set_type;
+
+    struct hashmap_ttl_tag {};
+    struct hashmap_key_tag {};
+
+    typedef boost::multi_index::multi_index_container<
+        KeyType,
+        boost::multi_index::indexed_by<
+            boost::multi_index::ordered_non_unique<
+                boost::multi_index::tag<hashmap_ttl_tag>,
+                boost::multi_index::member<KeyType,time_type,&KeyType::ttl_>
+            >,
+            boost::multi_index::hashed_unique<
+                boost::multi_index::tag<hashmap_key_tag>,
+                boost::multi_index::member<KeyType,std::string,&KeyType::key_>,
+                normalized_hash
+            >
+        >
+    > hashmap_type;
+
+    typedef hashmap_type::index<hashmap_ttl_tag>::type hashmap_set_by_ttl;
+    typedef hashmap_type::index<hashmap_key_tag>::type hashmap_set_by_key;
+
   public:
     typedef DHashmap class_type;
     typedef boost::interprocess::interprocess_upgradable_mutex mutex_type;
-    //typedef std::string key_type;
-    /**
-     * string - value
-     * val_type - when item added to storage
-     */ 
-    //typedef std::pair<val_type, time_type>  hashmap_val_type;
-    //typedef boost::shared_ptr<val_type> link_type;
-    typedef std::pair<key_type, /*link_type*/ map_item_type> item_type;
-    typedef boost::unordered_map<key_type, /*link_type*/map_item_type, normalized_hash> hashmap_type;   
+
     /**
      *
      */
