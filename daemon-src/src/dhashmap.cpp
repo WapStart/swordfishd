@@ -115,14 +115,14 @@ namespace wapstart {
 
     if (it != end_it)
     {
-/*       set_type::iterator set_it = values_.find();//(set_item_type(*(it->second)));
-      
-      if ((set_it == values_.end()))
+       set_type::iterator set_it = values_.find(set_item_type(it->value_));
+
+      if (set_it == values_.end())
       {
         __LOG_CRIT << "[DHashmap::get] value ref only in keys_!";
         abort();
       }
-*/
+
       val = *it->value_;
 
       if (boost::date_time::second_clock<time_type>::local_time()
