@@ -5,7 +5,12 @@
 #include <string>
 #include <stdlib.h>
 #include <boost/functional/hash.hpp>
-bool get_values_from_outside(const std::vector<std::string> &keys,std::vector<std::string> &values)
+
+bool get_values_from_outside(
+  const std::vector<std::string> &keys,
+  std::vector<std::string> &values,
+  boost::property_tree::ptree *config
+)
 {
   std::vector<std::string>::const_iterator it_key = keys.begin();
   values.erase(values.begin(), values.end());
