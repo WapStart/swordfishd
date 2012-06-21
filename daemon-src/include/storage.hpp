@@ -32,7 +32,7 @@ namespace wapstart {
     /**
      *
      */
-    Storage(size_t ttl, size_t max_storage_size, size_t expirate_size);
+    Storage(size_t ttl, size_t max_storage_size, size_t max_queue_size, size_t expirate_size);
     /**
      *
      */
@@ -62,7 +62,8 @@ namespace wapstart {
     storage_type storage_;
     queue_type   queue_;
     stats_type   stats_;
-    size_t       max_storage_size_;
+    size_t max_storage_size_; // in bytes
+    size_t max_queue_size_; // in bytes
     size_t       expirate_size_;
   }; 
   //-----------------------------------------------------------------------------------------------

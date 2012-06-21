@@ -31,6 +31,7 @@ namespace wapstart {
     bool empty();
     void wait_and_pop(data_type& data);
     uint size();
+    uint size_b();
   private:
     Queue(const class_type &);
     void operator =(const class_type &); 
@@ -38,6 +39,7 @@ namespace wapstart {
      * Queue data
      */  
     queue_type queue_;
+    size_t     curr_size_;
     /**
      * Synchronization
      */ 

@@ -9,9 +9,10 @@
 #include "logger.hpp"
 //-------------------------------------------------------------------------------------------------
 namespace wapstart {
-  Storage::Storage(size_t ttl, size_t max_storage_size, size_t expirate_size)
+  Storage::Storage(size_t ttl, size_t max_storage_size, size_t max_queue_size, size_t expirate_size)
     : storage_(storage_type::ttl_type(boost::posix_time::seconds(ttl))),
       max_storage_size_(max_storage_size),
+      max_queue_size_(max_queue_size),
       expirate_size_(expirate_size)
   {
   }
@@ -72,7 +73,10 @@ namespace wapstart {
 
   void Storage::push_key(const key_type& key)
   {
-    stats_.set_queue_size(queue_.push(key));
+    if (queue_.size_b() + key.length() <= max_queue_size_)
+      stats_.set_queue_size(queue_.push(key));
+    else
+      __LOG_WARN << "[Storage::push_key] queue is full";
   }
 //-------------------------------------------------------------------------------------------------
 
@@ -113,7 +117,7 @@ namespace wapstart {
         res_append(*x, value, res);
 
       if (!result)
-       queue_.push(normalized_key); 
+       push_key(normalized_key); 
     }
     res += "END\r\n";
     //printf("res: %s", res.c_str());
