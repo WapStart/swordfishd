@@ -117,7 +117,7 @@ namespace wapstart {
         res_append(*x, value, res);
 
       if (!result)
-       queue_.push(normalized_key); 
+       push_key(normalized_key); 
     }
     res += "END\r\n";
     //printf("res: %s", res.c_str());
