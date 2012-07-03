@@ -26,8 +26,11 @@ namespace wapstart {
     dlclose(lib_handle_);
   }
 //-------------------------------------------------------------------------------------------------
-  bool AbstractFiller::Configure(const std::string& libpath,
-                                 const std::string& funcname)
+  bool AbstractFiller::Configure(
+    const std::string& libpath,
+    const std::string& funcname,
+    size_t             max_fill_size
+  )
   {
     if (libpath.empty() || funcname.empty())
       return configured_;
@@ -49,6 +52,7 @@ namespace wapstart {
       exit(1);
     }
     __LOG_DEBUG << "Filler function loaded";
+    max_fill_size_ = max_fill_size ? max_fill_size : 10;
     configured_ = true;
   }
 //-------------------------------------------------------------------------------------------------
@@ -67,7 +71,7 @@ namespace wapstart {
       k = storage_->max_storage_size();
       if (k - storage_->storage_size() == 0)
         storage_->expirate();
-      size_t t = 10;
+      size_t t = max_fill_size_;
       while(t-- && is_alive() && storage_->queue_size() != 0  && k - storage_->storage_size()  > 0)
       {
         key = "";
