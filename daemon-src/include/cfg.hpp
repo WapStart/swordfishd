@@ -68,6 +68,10 @@ namespace wapstart {
     */
     size_t filler_queue_size() const;    
     /**
+     * Size of fill queue
+     */
+    size_t max_fill_size() const;
+    /**
      *  
      */
     size_t storage_expirate_size() const;
