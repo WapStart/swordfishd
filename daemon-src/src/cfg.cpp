@@ -62,6 +62,11 @@ namespace wapstart {
     return tree_.get<size_t>("general.filler_queue_size", 1048576 /* 1mb by default */);
   }  
   //-----------------------------------------------------------------------------------------------
+  size_t Config::max_fill_size() const
+  {
+    return tree_.get<size_t>("general.max_fill_size", 10 /* 10 by default */);
+  }
+  //-----------------------------------------------------------------------------------------------
   size_t Config::storage_expirate_size() const
   {
     return tree_.get<size_t>("general.storage_expirate_size", storage_size() >> 3);

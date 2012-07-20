@@ -31,14 +31,19 @@ namespace wapstart {
         storage_(storage),
         config_(config),
         is_alive_(true),
-        configured_(false) {};
+        configured_(false),
+        max_fill_size_(0) {};
     ~AbstractFiller();
     /**
      * @param storage.
      */
     void operator()();
     void Shutdown();
-    bool Configure(const std::string  &libpath, const std::string  &func_name);
+    bool Configure(
+      const std::string  &libpath,
+      const std::string  &func_name,
+      size_t             max_fill_size
+    );
 #ifndef __UNIT_TESTING_ON
   private:
 #endif // __UNIT_TESTING_ON
@@ -59,6 +64,7 @@ namespace wapstart {
     bool                is_alive_;
     bool                configured_;
     void               *lib_handle_;
+    size_t              max_fill_size_;
 
     boost::property_tree::ptree *config_;
   };
