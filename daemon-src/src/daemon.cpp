@@ -4,7 +4,8 @@
  */
 //-------------------------------------------------------------------------------------------------
 #include <iostream>
-#include "sys/stat.h"
+#include <sys/stat.h>
+#include <execinfo.h>
 
 #include "daemon.hpp"
 #include "logger.hpp"
@@ -261,6 +262,20 @@ namespace wapstart {
   //-----------------------------------------------------------------------------------------------
   void Daemon::on_segfault()
   {
+    __LOG_CRIT << "Segfault happens...";
+    __LOG_CRIT << "-- Backtrace --";
+
+    void *callstack[128];
+    int frames=backtrace(callstack, 128);
+    char **strs=backtrace_symbols(callstack, frames);
+
+    for(int i = 0; i < frames; ++i)
+      __LOG_CRIT << strs[i];
+
+    free(strs);
+
+    __LOG_CRIT << "-- /Backtrace --";
+
     on_exit();
   }
   //-----------------------------------------------------------------------------------------------
