@@ -276,7 +276,12 @@ namespace wapstart {
 
     __LOG_CRIT << "-- /Backtrace --";
 
-    on_exit();
+    struct sigaction act;
+    memset (&act, '\0', sizeof(act));
+    act.sa_handler = SIG_DFL;
+    act.sa_flags = SA_SIGINFO;
+    if (sigaction(SIGSEGV, &act, NULL) < 0)
+      throw std::runtime_error("Can't set sigaction for SIGSEGV to SIG_DFL");
   }
   //-----------------------------------------------------------------------------------------------
 } // namespace wapstart
