@@ -89,6 +89,10 @@ namespace wapstart {
     /**
      *
      */
+    void on_segfault();
+    /**
+     *
+     */
     void create_server();
     /**
      *  

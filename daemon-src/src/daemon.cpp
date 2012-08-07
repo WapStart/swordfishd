@@ -103,18 +103,20 @@ namespace wapstart {
            
     act.sa_flags = SA_SIGINFO;
                
-    if (sigaction(SIGTERM, &act, NULL) < 0) {
-      throw std::runtime_error("sigaction fuck!");
-    }
-    if (sigaction(SIGINT, &act, NULL) < 0) {
-      throw std::runtime_error("sigaction fuck!");
-    }
-    if (sigaction(SIGUSR1, &act, NULL) < 0) {
-      throw std::runtime_error("sigaction fuck!");
-    }
-    if (sigaction(SIGUSR2, &act, NULL) < 0) {
-      throw std::runtime_error("sigaction fuck!");
-    }
+    if (sigaction(SIGTERM, &act, NULL) < 0)
+      throw std::runtime_error("Can't set sigaction for SIGTERM");
+
+    if (sigaction(SIGINT, &act, NULL) < 0)
+      throw std::runtime_error("Can't set sigaction for SIGINT");
+
+    if (sigaction(SIGUSR1, &act, NULL) < 0)
+      throw std::runtime_error("Can't set sigaction for SIGUSR1");
+
+    if (sigaction(SIGUSR2, &act, NULL) < 0)
+      throw std::runtime_error("Can't set sigaction for SIGUSR2");
+
+    if (sigaction(SIGSEGV, &act, NULL) < 0)
+      throw std::runtime_error("Can't set sigaction for SIGSEGV");
   }
   //-----------------------------------------------------------------------------------------------
   void Daemon::dispatch_signal_handler(signal_type signal) 
@@ -125,6 +127,8 @@ namespace wapstart {
       service_.dispatch(boost::bind(&Daemon::on_config, this));
     else if(signal == SIGUSR2)
       service_.dispatch(boost::bind(&Daemon::on_expirate, this));
+    else if(signal == SIGSEGV)
+      service_.dispatch(boost::bind(&Daemon::on_segfault, this));
   }
   //-----------------------------------------------------------------------------------------------
   void Daemon::daemonize()
@@ -253,6 +257,11 @@ namespace wapstart {
     __LOG_INFO << "I'm expirating the storage...";
     
     storage_->expirate();
+  }
+  //-----------------------------------------------------------------------------------------------
+  void Daemon::on_segfault()
+  {
+    on_exit();
   }
   //-----------------------------------------------------------------------------------------------
 } // namespace wapstart
