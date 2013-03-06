@@ -219,7 +219,7 @@ namespace wapstart {
         values_.insert(new_item);
         keys_.insert(key_type_struct(key, new_item));
         inc_storage_size(new_item->length() + key.length());
-        __LOG_DEBUG << "[DHashmap::add] Add new key for exits value";
+        __LOG_DEBUG << "[DHashmap::add] Add new key-value pair";
       }
     }
 
