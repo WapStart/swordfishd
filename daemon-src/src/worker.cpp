@@ -8,6 +8,7 @@
 #include "worker.hpp"
 #include "command.hpp"
 #include "logger.hpp"
+#include "log_level.hpp"
 //-------------------------------------------------------------------------------------------------
 namespace wapstart {
   Worker::Worker(service_type &service,
@@ -84,10 +85,25 @@ namespace wapstart {
         }
 
         std::string response;
-        storage_._do(command, response);
 
-        if(response.empty()) response = "END\r\n";
-          
+        if(command.name() == "log_level") {
+          if (command.argc() == 1) {
+            LogLevel::type level = LogLevel::text2level(command.at(0));
+            logger_set_severity_level(level);
+
+            __LOG_INFO << "Client change LogLevel to " << level;
+
+            response = "OK\r\n";
+          } else
+            response = "ERROR\r\n";
+
+          response.append("END\r\n");
+        } else
+          storage_._do(command, response);
+
+        if(response.empty())
+          response = "END\r\n";
+
         boost::asio::write(socket_, boost::asio::buffer(response), boost::asio::transfer_all()); 
 
         /*boost::asio::async_write(socket_, boost::asio::buffer(response), 
