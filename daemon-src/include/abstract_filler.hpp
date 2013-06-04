@@ -27,6 +27,8 @@ namespace wapstart {
         std::vector<std::string>&,
         boost::property_tree::ptree *config
     );
+	typedef bool (*__is_filler_alive_type)(boost::property_tree::ptree *config);
+	
     AbstractFiller(storage_type *storage, boost::property_tree::ptree *config):
         storage_(storage),
         config_(config),
@@ -55,7 +57,8 @@ namespace wapstart {
     Storage::val_type Get_val(const Storage::key_type& key);    //= 0;
 
     //bool (*get_vals)(const std::vector<std::string>& keys, std::vector<std::string>& vals);
-    get_vals_type get_vals; 
+    get_vals_type get_vals;
+	__is_filler_alive_type is_filler_alive;
     std::string (*get_val)(std::string key);
     bool is_alive();
   

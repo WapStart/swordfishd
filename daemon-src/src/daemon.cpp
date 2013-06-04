@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sys/stat.h>
 #include <execinfo.h>
+#include <fcntl.h>
 
 #include "daemon.hpp"
 #include "logger.hpp"

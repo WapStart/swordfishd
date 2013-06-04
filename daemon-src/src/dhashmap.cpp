@@ -46,7 +46,7 @@ namespace wapstart {
       __normalize_key__ = (__normalize_key_type)(dlsym(lib_handle_, "normalize_key"));
     
     char * error;
-    if ((error = dlerror()) != NULL || !__normalize_key__ || !__custom_hash__)  
+    if ((error = dlerror()) != NULL || !__normalize_key__ || !__custom_hash__) 
     {
       __LOG_CRIT << "[DHashmap::configure_func] Cannot load custom  func. " << error;
       exit(1);

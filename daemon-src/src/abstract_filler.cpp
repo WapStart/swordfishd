@@ -17,6 +17,7 @@ namespace wapstart {
   void AbstractFiller::Shutdown()
   {
     __LOG_DEBUG << "I'm stopping filler thread...";
+
     boost::mutex::scoped_lock lock(state_mutex_);
     is_alive_ = false; 
   }
@@ -44,8 +45,11 @@ namespace wapstart {
       exit(1);
     }
     get_vals = (get_vals_type)(dlsym(lib_handle_, funcname.c_str()));
+
+	is_filler_alive = (__is_filler_alive_type)(dlsym(lib_handle_, "is_filler_alive"));
+	
     char * error;
-    if ((error = dlerror()) != NULL)  
+    if ((error = dlerror()) != NULL)
     {
       //printf("Error: [AbstractFiller::Configure] Cannot load filler func. error: %s\n", error);
       __LOG_CRIT << "[AbstractFiller::Configure] Cannot load filler func. " << error;
@@ -79,7 +83,8 @@ namespace wapstart {
         if (!key.empty())
           keys.push_back(key);
       }
-      if (keys.size() > 0)
+      
+      if (keys.size() > 0 && (is_filler_alive && is_filler_alive(config_)))
       {
         get_vals(keys, vals, config_);
         std::vector<std::string>::iterator key_it, val_it;
