@@ -84,7 +84,7 @@ namespace wapstart {
           keys.push_back(key);
       }
       
-      if (keys.size() > 0 && (is_filler_alive && is_filler_alive(config_)))
+      if (keys.size() > 0 && (!is_filler_alive || is_filler_alive(config_)))
       {
         get_vals(keys, vals, config_);
         std::vector<std::string>::iterator key_it, val_it;
