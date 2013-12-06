@@ -7,7 +7,7 @@
 #define __WAPSTART_SWORDFISH_LOGGER__H__
 //-------------------------------------------------------------------------------------------------
 #include <ostream>
-#include <boost/log/detail/prologue.hpp>
+#include <boost/log/detail/config.hpp>
 #include <boost/log/keywords/severity.hpp>
 #include <boost/log/sources/global_logger_storage.hpp>
 #include <boost/log/sources/severity_logger.hpp>
@@ -23,7 +23,7 @@ namespace wapstart {
   //-----------------------------------------------------------------------------------------------
   typedef boost::log::sources::severity_logger_mt<LogLevel::type> swordfish_logger;
 
-  BOOST_LOG_DECLARE_GLOBAL_LOGGER_INIT(logger, swordfish_logger)
+  BOOST_LOG_INLINE_GLOBAL_LOGGER_INIT(logger, swordfish_logger)
   {
     privacy::logger_init();
     return swordfish_logger();

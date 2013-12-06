@@ -3,16 +3,16 @@
  * @author  Litvinova Alina
  */
 //-------------------------------------------------------------------------------------------------
-#include <boost/log/utility/init/common_attributes.hpp>
-#include <boost/log/utility/init/to_file.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/utility/setup/file.hpp>
 #include <boost/log/sinks/syslog_backend.hpp>
 #include <boost/log/sinks/text_ostream_backend.hpp>
-#include <boost/log/formatters/stream.hpp>
-#include <boost/log/formatters/attr.hpp>
-#include <boost/log/formatters/date_time.hpp>
-#include <boost/log/formatters/message.hpp>
+#include <boost/log/expressions/attr.hpp>
+#include <boost/log/expressions/message.hpp>
+#include <boost/log/expressions/formatters/stream.hpp>
+#include <boost/log/expressions/formatters/date_time.hpp>
 #include <boost/log/utility/empty_deleter.hpp>
-#include <boost/log/filters.hpp>
+#include <boost/log/expressions/filter.hpp>
 #include <boost/shared_ptr.hpp>
 #include <fstream>
 //-------------------------------------------------------------------------------------------------
@@ -32,7 +32,7 @@ namespace wapstart {
     //---------------------------------------------------------------------------------------------
     void logger_init() 
     {
-      boost::log::add_common_attributes<char>();
+      boost::log::add_common_attributes();
     }
     //---------------------------------------------------------------------------------------------
     bool check_file(const std::string &file) 
@@ -57,7 +57,7 @@ namespace wapstart {
     
     c->set_filter
     (
-      filters::attr<LogLevel::type >("Severity") <= type
+      filter::attr<LogLevel::type>("Severity") <= type
     );
   }
   //-----------------------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ namespace wapstart {
       new sinks::syslog_backend
         (
         keywords::facility = sinks::syslog::user,
-        keywords::use_impl = sinks::syslog::native
+        keywords::use_impl = sinks::syslog::notice
         )
     );
 
