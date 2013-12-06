@@ -53,6 +53,8 @@ namespace wapstart {
     }
     __LOG_DEBUG << "Filler function loaded";
     configured_ = true;
+
+    return configured_;
   }
 //-------------------------------------------------------------------------------------------------
   uint DHashmap::expirate(size_t expirate_size)

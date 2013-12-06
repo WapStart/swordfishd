@@ -58,6 +58,8 @@ namespace wapstart {
     __LOG_DEBUG << "Filler function loaded";
     max_fill_size_ = max_fill_size ? max_fill_size : 10;
     configured_ = true;
+
+    return configured_;
   }
 //-------------------------------------------------------------------------------------------------
   void AbstractFiller::operator()()
