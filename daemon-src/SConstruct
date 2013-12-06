@@ -26,7 +26,6 @@ env.Append(CPPPATH=['include'])
 boost_libs = ['program_options', 'system', 'thread', 'log']
 
 multithread = int(ARGUMENTS.get('mt', 0))
-print multithread
 
 cfg = env.Configure()
 for lib in boost_libs:
