@@ -25,9 +25,12 @@ env.Append(CPPPATH=['include'])
 
 boost_libs = ['program_options', 'system', 'thread', 'log']
 
+multithread = int(ARGUMENTS.get('mt', 0))
+print multithread
+
 cfg = env.Configure()
 for lib in boost_libs:
-  if not cfg.CheckLib("boost_%s" % lib):
+  if not cfg.CheckLib("boost_%s" % lib + ('-mt' if multithread else '')):
     print "scons: %s boost library not found" % lib
     Exit(-1)
 
