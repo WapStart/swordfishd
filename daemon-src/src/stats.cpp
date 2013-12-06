@@ -38,7 +38,8 @@ namespace wapstart {
   bool Stats::set_start_time()
   {
     write_scoped_lock lock(mutex_);
-    start_time_ = boost::date_time::second_clock<time_type>::local_time(); 
+    start_time_ = boost::date_time::second_clock<time_type>::local_time();
+    return true;
   }
 
 //-------------------------------------------------------------------------------------------------
@@ -46,18 +47,21 @@ namespace wapstart {
   {
     write_scoped_lock lock(mutex_); 
     storage_size_ = size; 
+    return true;
   }
 //-------------------------------------------------------------------------------------------------
   bool Stats::set_values_size(uint size)
   {
     write_scoped_lock lock(mutex_);
     values_size_ = size; 
+    return true;
   }
 //-------------------------------------------------------------------------------------------------
   bool Stats::set_deleted(uint count)
   {
     write_scoped_lock lock(mutex_); 
     deleted_ += count;
+    return true;
   }
 
 //-------------------------------------------------------------------------------------------------
@@ -65,6 +69,7 @@ namespace wapstart {
   {
     write_scoped_lock lock(mutex_); 
     queue_size_ = size;
+    return true;
   }
 
 //-------------------------------------------------------------------------------------------------
@@ -72,6 +77,7 @@ namespace wapstart {
   {
     write_scoped_lock lock(mutex_); 
     gets_ += count;
+    return true;
   }
 
 //-------------------------------------------------------------------------------------------------
@@ -79,6 +85,7 @@ namespace wapstart {
   {
     write_scoped_lock lock(mutex_);
     updates_ += count;
+    return true;
   }
 
 //-------------------------------------------------------------------------------------------------
@@ -92,5 +99,6 @@ namespace wapstart {
     gets_         = 0;
     values_size_  = 0;
     updates_      = 0;
+    return true;
   }
 }// namespace wapstart
