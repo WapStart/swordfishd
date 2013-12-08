@@ -8,12 +8,9 @@
 #include <boost/log/sinks/syslog_backend.hpp>
 #include <boost/log/sinks/text_ostream_backend.hpp>
 #include <boost/log/sinks/basic_sink_frontend.hpp>
-#include <boost/log/expressions/attr.hpp>
-#include <boost/log/expressions/message.hpp>
-#include <boost/log/expressions/formatters/stream.hpp>
-#include <boost/log/expressions/formatters/date_time.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/support/date_time.hpp>
 #include <boost/log/utility/empty_deleter.hpp>
-#include <boost/log/expressions/filter.hpp>
 #include <boost/shared_ptr.hpp>
 #include <fstream>
 //-------------------------------------------------------------------------------------------------
@@ -140,15 +137,13 @@ namespace wapstart {
       privacy::text_stream_sink.reset(new 
           privacy::text_stream_sink_type(privacy::text_stream_backend));
       
-      /*privacy::text_stream_sink->locked_backend()->set_formatter(
-        expressions::stream
-          << "["
-          << expressions::format_date_time<boost::posix_time::ptime>("TimeStamp", "Y-m-d")
-          << " "
-          << expressions::attr<LogLevel::type>("Severity")
-          << "] "
-          << expressions::tag::message()
-      );*/
+      privacy::text_stream_sink->set_formatter
+      (
+        expressions::format("[%1% %2%] %3%")
+          % expressions::format_date_time<boost::posix_time::ptime>("TimeStamp", "%Y-%m-%d %H:%M:%S")
+          % expressions::attr<LogLevel::type>("Severity")
+          % expressions::smessage
+      );
 
       c->add_sink(privacy::text_stream_sink);
     }
@@ -157,14 +152,13 @@ namespace wapstart {
       privacy::syslog_sink.reset(new 
           privacy::syslog_sink_type(privacy::syslog_backend));
     
-      /*privacy::syslog_sink->locked_backend()->set_formatter(
-        expressions::stream << "["
-                           << expressions::format_date_time<boost::posix_time::ptime>("TimeStamp", "Y-m-d")
-                           << " "
-                           << expressions::attr<LogLevel::type>("Severity")
-                           << "] "
-                           << expressions::tag::message()
-        );*/
+      privacy::syslog_sink->set_formatter
+      (
+        expressions::format("[%1% %2%] %3%")
+          % expressions::format_date_time<boost::posix_time::ptime>("TimeStamp", "%Y-%m-%d %H:%M:%S")
+          % expressions::attr<LogLevel::type>("Severity")
+          % expressions::smessage
+      );
 
       c->add_sink(privacy::syslog_sink);
     }

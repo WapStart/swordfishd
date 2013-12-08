@@ -23,7 +23,7 @@ add_extra_libs('/usr/local')
 
 env.Append(CPPPATH=['include'])
 
-boost_libs = ['program_options', 'system', 'thread', 'log']
+boost_libs = ['program_options', 'system', 'thread', 'log', 'log_setup']
 
 multithread = int(ARGUMENTS.get('mt', 0))
 

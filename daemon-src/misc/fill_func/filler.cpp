@@ -6,6 +6,11 @@
 #include <stdlib.h>
 #include <boost/functional/hash.hpp>
 
+bool is_filler_alive()
+{
+	return true;
+}
+
 bool get_values_from_outside(
   const std::vector<std::string> &keys,
   std::vector<std::string> &values,
