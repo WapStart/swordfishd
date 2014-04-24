@@ -76,7 +76,7 @@ namespace wapstart {
     if (queue_.size() < max_queue_size_)
       stats_.set_queue_size(queue_.push(key));
     else
-      __LOG_WARN << "[Storage::push_key] queue is full";
+      __LOG_NOTICE << "[Storage::push_key] queue is full";
   }
 //-------------------------------------------------------------------------------------------------
 
