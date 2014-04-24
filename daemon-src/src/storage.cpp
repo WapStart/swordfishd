@@ -73,7 +73,7 @@ namespace wapstart {
 
   void Storage::push_key(const key_type& key)
   {
-    if (queue_.size_b() + key.length() <= max_queue_size_)
+    if (queue_.size() < max_queue_size_)
       stats_.set_queue_size(queue_.push(key));
     else
       __LOG_WARN << "[Storage::push_key] queue is full";
