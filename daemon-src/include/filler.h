@@ -22,4 +22,6 @@ extern "C" void normalize_key(
 );
 
 extern "C" void custom_hash(const std::string &value/*in*/, size_t &hash/*out*/);
+
+extern "C" bool is_filler_alive(boost::property_tree::ptree *config);
 #endif //__WAPSTART_SWORDFISH_FILLER_H__
